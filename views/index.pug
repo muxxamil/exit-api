@@ -1,0 +1,15 @@
+doctype html
+html
+	head
+		title Sequelize Auto-API-Generator
+	body
+		form.login-form(action="autoGenerateApi", method="POST")
+			h1= "Please Mention Table Name"
+			.form-group
+				label.control-label Table Name
+				input.form-control(type="text", name="tableName", placeholder="Table Name...", autofocus)
+			.form-group.btn-container
+				button.btn.btn-primary.btn-block
+					| Generate
+
+      

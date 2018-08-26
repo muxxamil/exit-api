@@ -1,0 +1,10 @@
+{
+    "AUTHENTICATION": {
+        "TOKEN_EXPIRE" : "Your token has been expired",
+        "TOKEN_INVALID" : "Your token is invalid",
+        "TOKEN_MISSING" : "Token has not been passed in headers",
+        "CREDENTIALS_INVALID" : "Invalid email or password",
+        "CREDENTIALS_SUSPENDED" : "Your account has been suspended, Please contact our support",
+        "MULTIPLE_ACCOUNTS" : "Multiple accounts are found against given credentials, Please contact our support"
+    }
+}
