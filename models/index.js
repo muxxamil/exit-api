@@ -21,7 +21,6 @@ const config = {
       handleDisconnects: process.env.POOL_HANDLE_DISCONNECTS
     }
   };
-  console.log("AQW", JSON.stringify(config));
   var sequelize = new Sequelize(process.env.DB_DATABASE, process.env.DB_USERNAME, process.env.DB_PASSWORD, config);
 
 fs
