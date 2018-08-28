@@ -9,6 +9,8 @@ const {
 
 router.get('/', async (req, res, next) => {
     try {
+        console.log("REQ", JSON.stringify(req.user));
+        
         let params = req.query ? req.query : {};
         let usersRes = await User.getUsers(params);
         res.send(200, JSON.stringify(usersRes));
