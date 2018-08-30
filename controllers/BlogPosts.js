@@ -1,19 +1,19 @@
 'use strict';
-const express = require('express');
-const router = express.Router();
-const sequelize = require('sequelize');
-const op = sequelize.Op;
+const express   = require('express');
+const router    = express.Router();
+const bbPromise = require('bluebird');
+const _         = require('lodash');
+
 const {
-    User,
+    BlogPost,
 } = require('../models');
 
 router.get('/', async (req, res, next) => {
     try {
-        console.log("REQ", JSON.stringify(req.user));
-        
         let params = req.query ? req.query : {};
-        let usersRes = await User.getUsers(params);
-        res.send(200, JSON.stringify(usersRes));
+        let blogDataAndCountPromises = BlogPost.getBlogPosts(params);
+        let [data, count] = await bbPromise.all([blogDataAndCountPromises.dataPromise, blogDataAndCountPromises.countPromise]);
+        res.send(200, {count: _.isEmpty(count) ? 0 : count.count, rows: data});
     } catch (err) {
         next(err);
     }

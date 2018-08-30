@@ -2,7 +2,7 @@
 
 module.exports = function (sequelize, DataTypes) {
 
-    const BlogPostLike = sequelize.define('BlogPostLike', {
+    const Tag = sequelize.define('Tag', {
 
         id: {
             type: DataTypes.INTEGER(11),
@@ -10,36 +10,39 @@ module.exports = function (sequelize, DataTypes) {
             primaryKey: true,
             autoIncrement: true,
         },
-        blogId: {
+        key: {
             type: DataTypes.INTEGER(11),
             allowNull: false,
-            field    : 'blog_id'
         },
-        likedByType: {
+        title: {
             type: DataTypes.ENUM('ip'),
             allowNull: false,
-            field    : 'liked_by_type'
         },
-        likedBy: {
+        active: {
             type: DataTypes.STRING(50),
             allowNull: false,
-            field    : 'liked_by'
         },
         createdAt: {
             type: DataTypes.DATE,
             allowNull: false,
             field: 'created_at'
+        },
+        updatedAt: {
+            type: DataTypes.DATE,
+            allowNull: false,
+            field: 'updated_at'
         }
     }, {
 
-        tableName: 'blog_post_likes'
+        tableName: 'tags'
     });
 
-    BlogPostLike.associate = function (models) {
+    Tag.CONSTANTS = {
+        ACTIVE: {
+            YES: true,
+            NO: false,
+        }
+    }
 
-        BlogPostLike.belongsTo(models.BlogPost, { as: 'BlogPost', foreignKey: 'blogId' });
-
-    };
-
-    return BlogPostLike;
+    return Tag;
 }

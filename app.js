@@ -28,7 +28,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(authenticationMiddleware.isAuthenticUser.unless(
   { path: [
       { url: '/authentication/login', methods: ['POST'] },
-      { url: '/blogs/', methods: ['GET'] },
+      { url: '/blogPosts', methods: ['GET'] },
   ]}
 ));
 

@@ -53,8 +53,31 @@ module.exports = function (sequelize, DataTypes) {
         }
     }, {
 
-        tableName: 'Comment'
+        tableName: 'comments'
     });
+
+    Comment.associate = function (models) {
+
+        Comment.hasMany(models.Comment, { foreignKey    : 'againstId', as: 'CommentsAgainstComment',
+                                                  scope         : { against_type: 'comment' } });
+
+    };
+
+    Comment.CONSTANTS = {
+        ACTIVE: {
+            YES: true,
+            NO: false,
+        },
+        AGAINST_TYPE: {
+            BLOG: 'blog',
+            COMMENT: 'comment',
+        },
+        STATUS: {
+            PENDING: 'pending',
+            APPROVED: 'approved',
+            REJECTED: 'rejected'
+        }
+    }
 
     return Comment;
 }

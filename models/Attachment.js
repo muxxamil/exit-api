@@ -26,13 +26,15 @@ module.exports = function (sequelize, DataTypes) {
             type: DataTypes.ENUM('image'),
             allowNull: false,
         },
-        against_type: {
+        againstType: {
             type: DataTypes.ENUM('blog'),
             allowNull: false,
+            field: 'against_type'
         },
-        against_id: {
+        againstId: {
             type: DataTypes.INTEGER(11),
             allowNull: false,
+            field: 'against_id'
         },
         active: {
             type: DataTypes.INTEGER(1),
@@ -61,6 +63,19 @@ module.exports = function (sequelize, DataTypes) {
 
         tableName: 'attachments'
     });
+
+    Attachment.CONSTANTS = {
+        ACTIVE: {
+            YES: true,
+            NO: false,
+        },
+        AGAINST_TYPE: {
+            BLOG: 'blog'
+        },
+        TYPE: {
+            IMAGE: 'image'
+        }
+    }
 
     return Attachment;
 }
