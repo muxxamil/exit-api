@@ -6,5 +6,12 @@
         "CREDENTIALS_INVALID" : "Invalid email or password",
         "CREDENTIALS_SUSPENDED" : "Your account has been suspended, Please contact our support",
         "MULTIPLE_ACCOUNTS" : "Multiple accounts are found against given credentials, Please contact our support"
+    },
+    "MISSING_ATTRIBUTES": {
+        "AGAINST_TYPE": "Missing required attribute (againstType)",   
+        "AGAINST_ID": "Missing required attribute (againstId)",   
+        "COMMENT": "Missing required attribute (comment)", 
+        "ADDED_BY_EMAIL": "Missing required attribute (addedByEmail)", 
+        "ADDED_BY_NAME": "Missing required attribute (addedByName)" 
     }
 }

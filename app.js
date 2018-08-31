@@ -29,6 +29,7 @@ app.use(authenticationMiddleware.isAuthenticUser.unless(
   { path: [
       { url: '/authentication/login', methods: ['POST'] },
       { url: '/blogPosts', methods: ['GET'] },
+      { url: '/comments/visitor', methods: ['POST'] },
   ]}
 ));
 

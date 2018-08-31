@@ -27,10 +27,12 @@ module.exports = function (sequelize, DataTypes) {
         active: {
             type: DataTypes.INTEGER(1),
             allowNull: false,
+            defaultValue : true,
         },
         status: {
             type: DataTypes.ENUM('pending', 'approved', 'rejected'),
             allowNull: false,
+            defaultValue : 'pending',
         },
         addedBy: {
             type: DataTypes.INTEGER(11),
@@ -77,6 +79,12 @@ module.exports = function (sequelize, DataTypes) {
             APPROVED: 'approved',
             REJECTED: 'rejected'
         }
+    }
+
+
+
+    Comment.addComment = (params) => {
+        return Comment.create(params);
     }
 
     return Comment;

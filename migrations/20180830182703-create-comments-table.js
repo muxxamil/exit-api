@@ -25,12 +25,14 @@ module.exports = {
         allowNull: false,
       },
       active: {
-        type: Sequelize.INTEGER(1),
-        allowNull: false,
+          type: DataTypes.INTEGER(1),
+          allowNull: false,
+          defaultValue : true,
       },
       status: {
-        type: Sequelize.ENUM('pending', 'approved', 'rejected'),
-        allowNull: false,
+          type: DataTypes.ENUM('pending', 'approved', 'rejected'),
+          allowNull: false,
+          defaultValue : 'pending',
       },
       addedBy: {
         type: Sequelize.INTEGER(11),

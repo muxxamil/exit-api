@@ -16,11 +16,12 @@ module.exports = {
       },
       email: {
         type: Sequelize.STRING(100),
+        unique              : true,
         allowNull: false,
       },
       password: {
         type: Sequelize.STRING(100),
-        allowNull: false,
+        allowNull: true,
       },
       cell: {
         type: Sequelize.STRING(50),
@@ -31,6 +32,10 @@ module.exports = {
         allowNull: true,
       },
       longitude: {
+        type: Sequelize.INTEGER(11),
+        allowNull: true,
+      },
+      type: {
         type: Sequelize.INTEGER(11),
         allowNull: true,
       },

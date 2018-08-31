@@ -1,4 +1,5 @@
 'use strict';
+const _         = require('lodash');
 
 module.exports = function (sequelize, DataTypes) {
 
@@ -20,7 +21,8 @@ module.exports = function (sequelize, DataTypes) {
         },
         password: {
             type: DataTypes.STRING(100),
-            allowNull: false,
+            unique : true,
+            allowNull: true,
         },
         cell: {
             type: DataTypes.STRING(50),
@@ -31,6 +33,10 @@ module.exports = function (sequelize, DataTypes) {
             allowNull: true,
         },
         longitude: {
+            type: DataTypes.INTEGER(11),
+            allowNull: true,
+        },
+        type: {
             type: DataTypes.INTEGER(11),
             allowNull: true,
         },
@@ -63,6 +69,17 @@ module.exports = function (sequelize, DataTypes) {
         options.where = User.getRawParams(params);
         return User.findAndCountAll(options);
 
+    }
+
+    User.insertIgnoreUser = async (params) => {
+
+        let userResult = await User.getUsers({email: params.email});
+        
+        if(!_.isEmpty(userResult.rows)) {
+            return Promise.resolve(_.first(userResult.rows));
+        }
+
+        return User.create(params);
     }
 
     return User;
