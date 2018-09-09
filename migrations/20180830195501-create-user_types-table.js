@@ -19,7 +19,7 @@ module.exports = {
         allowNull: false,
       },
       displayOrder: {
-          type: DataTypes.INTEGER(11),
+          type: Sequelize.INTEGER(11),
           field: 'display_order',
           allowNull: false,
       },
