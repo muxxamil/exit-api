@@ -2,7 +2,7 @@
 
 module.exports = {
   up: (queryInterface, Sequelize) => {
-    return queryInterface.createTable('definition_user_types', {
+    return queryInterface.createTable('definition_user_designations', {
 
       id: {
         type: Sequelize.INTEGER(11),
@@ -17,6 +17,11 @@ module.exports = {
       title: {
         type: Sequelize.STRING(50),
         allowNull: false,
+      },
+      displayOrder: {
+          type: DataTypes.INTEGER(11),
+          field: 'display_order',
+          allowNull: false,
       },
       createdAt: {
         type: Sequelize.DATE,

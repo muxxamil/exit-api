@@ -2,7 +2,7 @@
 
 module.exports = function (sequelize, DataTypes) {
 
-    const UserType = sequelize.define('UserType', {
+    const UserDesignation = sequelize.define('UserDesignation', {
 
         id: {
             type: DataTypes.INTEGER(11),
@@ -18,6 +18,11 @@ module.exports = function (sequelize, DataTypes) {
             type: DataTypes.STRING(50),
             allowNull: false,
         },
+        displayOrder: {
+            type: DataTypes.INTEGER(11),
+            field: 'display_order',
+            allowNull: false,
+        },
         createdAt: {
             type: DataTypes.DATE,
             allowNull: false,
@@ -30,13 +35,14 @@ module.exports = function (sequelize, DataTypes) {
         }
     }, {
 
-        tableName: 'definition_user_types'
+        tableName: 'definition_user_designations'
     });
 
-    UserType.CONSTANTS = {
-        STAFF: 1,
-        VISITOR: 2
+    UserDesignation.CONSTANTS = {
+        CEO: 1,
+        VISITOR: 2,
+        RECEP: 3
     }
 
-    return UserType;
+    return UserDesignation;
 }

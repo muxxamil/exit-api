@@ -35,9 +35,10 @@ module.exports = {
         type: Sequelize.INTEGER(11),
         allowNull: true,
       },
-      type: {
+      designationId: {
         type: Sequelize.INTEGER(11),
-        allowNull: true,
+        field: 'designation_id',
+        allowNull: false,
       },
       addedBy: {
         type: Sequelize.INTEGER(11),

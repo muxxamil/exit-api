@@ -36,9 +36,10 @@ module.exports = function (sequelize, DataTypes) {
             type: DataTypes.INTEGER(11),
             allowNull: true,
         },
-        type: {
+        designationId: {
             type: DataTypes.INTEGER(11),
-            allowNull: true,
+            field: 'designation_id',
+            allowNull: false,
         },
         addedBy: {
             type: DataTypes.INTEGER(11),
