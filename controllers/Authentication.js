@@ -18,7 +18,7 @@ router.post('/login', async (req, res, next) => {
         if (!req.body.email || !req.body.password) {
             errorMessage = !req.body.email     ? errorMessage +  " 'email' "   : errorMessage;
             errorMessage = !req.body.password     ? errorMessage +  " 'password' "   : errorMessage;
-            res.status(400).send({ message: errorMessage });
+            return res.status(400).send({ message: errorMessage });
         }
 
         let params = { email: req.body.email, password: md5(req.body.password) };

@@ -98,7 +98,6 @@ module.exports = function (sequelize, DataTypes) {
             }
             
         ];
-        console.log("options.include", options.include);
         let countPromise = BlogPost.find({
             attributes: [ [ sequelize.literal('count(*)'), 'count' ] ],
             include: _.clone(options.include),
@@ -116,7 +115,6 @@ module.exports = function (sequelize, DataTypes) {
             options.offset = limitOptions.offset
         }
 
-        console.log("options.include", options.include);
         BlogPost.appendOptionalIncludeStatements(options.include);
         let dataPromise = BlogPost.findAll(options);
         return {

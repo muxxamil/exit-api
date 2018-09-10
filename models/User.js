@@ -41,6 +41,11 @@ module.exports = function (sequelize, DataTypes) {
             field: 'designation_id',
             allowNull: false,
         },
+        active: {
+            type: DataTypes.BOOLEAN,
+            allowNull: false,
+            defaultValue: false,
+        },
         addedBy: {
             type: DataTypes.INTEGER(11),
             field: 'added_by'
@@ -62,12 +67,25 @@ module.exports = function (sequelize, DataTypes) {
         tableName: 'users'
     });
 
+    User.associate = function (models) {
+
+        User.belongsTo(models.UserDesignation, {foreignKey: 'designationId'});
+
+    };
+
     User.getUsers = (params) => {
 
         let options = {};
         options = User.setPagination(params);
         options.attributes = { exclude: ['password'] };
         options.where = User.getRawParams(params);
+        options.include = [
+            {
+                model : sequelize.models.UserDesignation,
+                attributes: ['title'],
+                required: true
+            }
+        ];
         return User.findAndCountAll(options);
 
     }
