@@ -100,7 +100,7 @@ module.exports = function (sequelize, DataTypes) {
         ];
         let countPromise = BlogPost.find({
             attributes: [ [ sequelize.literal('count(*)'), 'count' ] ],
-            include: _.clone(options.include),
+            // include: _.clone(options.include),
             raw: true,
             where: _.clone(options.where),
             group: 'BlogPost.id'
