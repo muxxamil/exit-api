@@ -12,15 +12,8 @@ router.get('/', async (req, res, next) => {
     try {
         let params = req.query ? req.query : {};
         let blogDataAndCountPromises = BlogPost.getBlogPosts(params);
-        console.log("blogDataAndCountPromises", blogDataAndCountPromises);
-        bbPromise.all([blogDataAndCountPromises.dataPromise, blogDataAndCountPromises.countPromise]).then((result) => {
-            let data = result[0];
-            let count = result[1];
-            console.log("data", data);
-            console.log("count", count);
-            console.log("{count: _.isEmpty(count) ? 0 : count.count, rows: data}", {count: _.isEmpty(count) ? 0 : count.count, rows: data});
-            res.send(200, {count: _.isEmpty(count) ? 0 : count.count, rows: data});
-        });
+        let [data, count] = await bbPromise.all([blogDataAndCountPromises.dataPromise, blogDataAndCountPromises.countPromise]);
+        res.send(200, {count: _.isEmpty(count) ? 0 : count.count, rows: data});
     } catch (err) {
         next(err);
     }
