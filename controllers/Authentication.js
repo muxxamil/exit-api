@@ -25,17 +25,17 @@ router.post('/login', async (req, res, next) => {
         let userRes = await User.getUsers(params);
 
         if(userRes.count > 1) {
-            res.status(409).send({ message: req.app.locals.translation.AUTHENTICATION.MULTIPLE_ACCOUNTS });
+            return res.status(409).send({ message: req.app.locals.translation.AUTHENTICATION.MULTIPLE_ACCOUNTS });
         }
 
         userRes = _.first(userRes.rows); 
 
         if(_.isEmpty(userRes)) {
-            res.status(400).send({ message: req.app.locals.translation.AUTHENTICATION.CREDENTIALS_INVALID });
+            return res.status(400).send({ message: req.app.locals.translation.AUTHENTICATION.CREDENTIALS_INVALID });
         }
 
         if(userRes.deleted == true) {
-            res.status(405).send({ message: req.app.locals.translation.AUTHENTICATION.CREDENTIALS_SUSPENDED });
+            return res.status(405).send({ message: req.app.locals.translation.AUTHENTICATION.CREDENTIALS_SUSPENDED });
         }
 
         res.status(200).send({ token: authenticationHelper.generateToken(userRes) });
