@@ -12,6 +12,7 @@ router.get('/', async (req, res, next) => {
     try {
         let params = req.query ? req.query : {};
         let blogDataAndCountPromises = BlogPost.getBlogPosts(params);
+        console.log("blogDataAndCountPromises", blogDataAndCountPromises);
         let [data, count] = await bbPromise.all([blogDataAndCountPromises.dataPromise, blogDataAndCountPromises.countPromise]);
         console.log("data", data);
         console.log("count", count);
