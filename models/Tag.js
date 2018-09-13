@@ -19,7 +19,7 @@ module.exports = function (sequelize, DataTypes) {
             allowNull: false,
         },
         active: {
-            type: DataTypes.STRING(50),
+            type: DataTypes.BOOLEAN,
             allowNull: false,
         },
         createdAt: {

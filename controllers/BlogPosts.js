@@ -19,4 +19,24 @@ router.get('/', async (req, res, next) => {
     }
 });
 
+router.delete('/', async (req, res, next) => {
+    try {
+        console.log(req.query.ids);
+        
+        if(_.isEmpty(req.query.ids)) {
+            return res.send(400, {});
+        }
+
+        let deleteBlogPosts = await BlogPost.update({
+            active: BlogPost.CONSTANTS.ACTIVE.NO
+        }, {
+            where: { id: req.query.ids }
+        });
+
+        res.send(200, deleteBlogPosts);
+    } catch (err) {
+        next(err);
+    }
+});
+
 module.exports = router;
