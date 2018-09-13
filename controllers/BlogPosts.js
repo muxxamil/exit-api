@@ -13,6 +13,9 @@ router.get('/', async (req, res, next) => {
         let params = req.query ? req.query : {};
         let blogDataAndCountPromises = BlogPost.getBlogPosts(params);
         let [data, count] = await bbPromise.all([blogDataAndCountPromises.dataPromise, blogDataAndCountPromises.countPromise]);
+        console.log("data", data);
+        console.log("count", count);
+        console.log("{count: _.isEmpty(count) ? 0 : count.count, rows: data}", {count: _.isEmpty(count) ? 0 : count.count, rows: data});
         res.send(200, {count: _.isEmpty(count) ? 0 : count.count, rows: data});
     } catch (err) {
         next(err);
