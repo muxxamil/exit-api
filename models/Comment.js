@@ -62,6 +62,7 @@ module.exports = function (sequelize, DataTypes) {
 
         Comment.hasMany(models.Comment, { foreignKey    : 'againstId', as: 'CommentsAgainstComment',
                                                   scope         : { against_type: 'comment' } });
+        Comment.belongsTo(models.User, {foreignKey: 'addedBy', as: 'AddedBy'});
 
     };
 
@@ -81,10 +82,8 @@ module.exports = function (sequelize, DataTypes) {
         }
     }
 
-
-
     Comment.addComment = (params) => {
-        return Comment.create(params);
+        return Comment.create(Comment.getRawParams(params));
     }
 
     return Comment;

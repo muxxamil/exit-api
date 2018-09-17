@@ -1,4 +1,5 @@
 'use strict';
+const _         = require('lodash');
 
 module.exports = function (sequelize, DataTypes) {
 
@@ -51,6 +52,19 @@ module.exports = function (sequelize, DataTypes) {
         TagsBlogPostsMapping.belongsTo(models.Tag, {foreignKey: 'tagId'});
 
     };
+
+    TagsBlogPostsMapping.createBlogPostAndTagIdsRelation = (params) => {
+        let blogPostAndTagRelationPromises = [];
+        _.forEach(params.tagIds, (singleTagId) => {
+            blogPostAndTagRelationPromises.push(TagsBlogPostsMapping.create({
+                blogId: params.blogId,
+                tagId: singleTagId,
+                active: TagsBlogPostsMapping.CONSTANTS.ACTIVE.YES,
+            }));
+        });
+
+        return blogPostAndTagRelationPromises;
+    }
 
     return TagsBlogPostsMapping;
 }

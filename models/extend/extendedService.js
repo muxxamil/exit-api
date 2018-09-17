@@ -19,7 +19,10 @@ module.exports = (model) => {
 
         let response        = {};
         if(!params.all) {
-          let page            = params.page ? (parseInt(params.page)) : defaults.page;
+            if(params.page == 0) {
+                params.page = 1;
+            }
+          let page            = params.page ? (parseInt(params.page) - 1) : defaults.page;
     
           response.limit       = parseInt( params.pageLimit || defaults.resultSetLimit );
           response.offset      = (page * response.limit);

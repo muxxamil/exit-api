@@ -6,7 +6,7 @@ var logger                    = require('morgan');
 let routes                    = require('./routes/appRouter');
 let authenticationMiddleware  = require('./middlewares/Authentication');
 var i18n                      = require("i18n-express");
-
+let responseHandler          = require('./helpers/ResponseHandler');
 
 var app = express();
 
@@ -40,15 +40,15 @@ app.use(function(req, res, next) {
   next(createError(404));
 });
 
-// error handler
-app.use(function(err, req, res, next) {
-  // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
-
-  // render the error page
-  res.status(err.status || 500);
-  res.render('error');
+// Catch error from all over the application here & pass to response middleware.
+app.use(function (err, req, res, next) {
+  req.error = err;
+  // logger.error(err, req.url, err.stack );
+  if (err.code === 'permission_denied') {
+    res.status(401).send('insufficient permissions');
+  }else{
+      responseHandler.sendError(err, res);
+  }
 });
 
 module.exports = app;

@@ -9,6 +9,16 @@ const {
     UserDesignation
 } = require('../models');
 
+router.post('/', commentMiddleware.addComment, async (req, res, next) => {
+    try {
+        console.log("req", req);
+        let commentResult = await Comment.addComment(req.body);
+        res.status(200).send(commentResult);
+    } catch (err) {
+        next(err);
+    }
+});
+
 router.post('/visitor', commentMiddleware.addCommentByVisitor, async (req, res, next) => {
     try {
         let userDetail = await User.insertIgnoreUser({email: req.body.addedByEmail, name: req.body.addedByName, designationId: UserDesignation.CONSTANTS.VISITOR});

@@ -12,6 +12,18 @@
         "AGAINST_ID": "Missing required attribute (againstId)",   
         "COMMENT": "Missing required attribute (comment)", 
         "ADDED_BY_EMAIL": "Missing required attribute (addedByEmail)", 
-        "ADDED_BY_NAME": "Missing required attribute (addedByName)" 
+        "ADDED_BY_NAME": "Missing required attribute (addedByName)",
+
+        "NAME": "Missing required attribute (name)",
+        "PASSWORD": "Missing required attribute (password)",
+        "EMAIL": "Missing required attribute (email)",
+        "DESIGNATION_ID": "Missing required attribute (designationId)",
+        "ADDED_BY": "Missing required attribute (addedBy)",
+        "UPDATED_BY": "Missing required attribute (updateBy)",
+        "TITLE": "Missing required attribute (title)",
+        "PRE_POST_DETAIL": "Pre Description or Post Description, atleast one them is required"
+    },
+    "CONSTRAINTS": {
+        "EMAIL_ALREADY_EXIST": "Email already exists"
     }
 }

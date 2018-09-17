@@ -77,7 +77,6 @@ module.exports = function (sequelize, DataTypes) {
 
         let options = {};
         options = User.setPagination(params);
-        options.attributes = { exclude: ['password'] };
         options.where = User.getRawParams(params);
         options.include = [
             {

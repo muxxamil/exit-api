@@ -15,8 +15,7 @@ config.year                     = 'Y';
 config.resultSetLimit           = 20;
 config.offsetValue              = 0;
 config.page                     = 0;
-config.sortBy                   = {'DESC' : 'DESC', 'ASC' : 'ASC'};
-config.sortOrder                = 'DESC';
+config.sortOrder                = {DESC : 'DESC', ASC : 'ASC'};
 config.tokenDuration            = '10h';
 
 module.exports = config;
