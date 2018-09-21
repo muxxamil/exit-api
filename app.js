@@ -2,11 +2,12 @@ var createError               = require('http-errors');
 var express                   = require('express');
 var path                      = require('path');
 var cookieParser              = require('cookie-parser');
-var logger                    = require('morgan');
+// var logger                    = require('morgan');
 let routes                    = require('./routes/appRouter');
 let authenticationMiddleware  = require('./middlewares/Authentication');
 var i18n                      = require("i18n-express");
-let responseHandler          = require('./helpers/ResponseHandler');
+let responseHandler           = require('./helpers/ResponseHandler');
+let logger                    = require('./helpers/Logger');
 
 var app = express();
 
@@ -19,7 +20,7 @@ app.use(i18n({
 }));
 app.set('view engine', 'pug');
 
-app.use(logger('dev'));
+// app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
@@ -29,6 +30,8 @@ app.use(authenticationMiddleware.isAuthenticUser.unless(
   { path: [
       { url: '/authentication/login', methods: ['POST'] },
       { url: '/blogPosts', methods: ['GET'] },
+      { url: '/rentalLocations', methods: ['GET'] },
+      { url: '/rentalLocations/:id/availibility', methods: ['GET'] },
       { url: '/comments/visitor', methods: ['POST'] },
   ]}
 ));
@@ -43,7 +46,7 @@ app.use(function(req, res, next) {
 // Catch error from all over the application here & pass to response middleware.
 app.use(function (err, req, res, next) {
   req.error = err;
-  // logger.error(err, req.url, err.stack );
+  logger.error(err, req.url, err.stack );
   if (err.code === 'permission_denied') {
     res.status(401).send('insufficient permissions');
   }else{

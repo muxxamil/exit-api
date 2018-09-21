@@ -11,11 +11,18 @@ config.dateFormat               = 'YYYY-MM-DD';
 config.timeFormat               = 'HH:mm:ss';
 config.month                    = 'MMMM';
 config.monthAndYear             = 'MMM-YY';
+config.amPmTimeFormat           = 'hh:mm A';
 config.year                     = 'Y';
+config.hour                     = 'HH';
 config.resultSetLimit           = 20;
 config.offsetValue              = 0;
 config.page                     = 0;
 config.sortOrder                = {DESC : 'DESC', ASC : 'ASC'};
 config.tokenDuration            = '10h';
+
+config.FLAG                     = {
+    YES: true,
+    NO: false,
+};
 
 module.exports = config;

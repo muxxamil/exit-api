@@ -7,5 +7,7 @@ module.exports = (app) => {
   app.use('/authentication', require('../controllers/Authentication'));
   app.use('/blogPosts', require('../controllers/BlogPosts'));
   app.use('/comments', require('../controllers/Comments'));
+  app.use('/rentalLocations', require('../controllers/RentalLocations'));
+  app.use('/locationBookings', require('../controllers/LocationBookings'));
 
 }
