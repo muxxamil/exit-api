@@ -10,10 +10,7 @@ const {
 
 router.get('/', async (req, res, next) => {
     try {
-        let locationBookingResult = await LocationBooking.getLocationBookings({
-            delete: defaults.FLAG.NO,
-            bookedBy: req.user.id
-        });
+        let locationBookingResult = await LocationBooking.getLocationBookings(req.query);
 
         if(req.query.eventFormattedResult) {
             locationBookingResult.rows = LocationBooking.formatAccordingToEvents(locationBookingResult.rows);

@@ -77,8 +77,10 @@ module.exports = function (sequelize, DataTypes) {
         return formattedResult;
     }
     LocationBooking.getLocationBookings = (params) => {
+        let whereClause = LocationBooking.getRawParams(params);
+        whereClause.deleted = defaults.FLAG.NO;
         return LocationBooking.findAndCountAll({
-            where: LocationBooking.getRawParams(params),
+            where: whereClause,
             attributes: ['from', 'to', 'id'],
             include: [
                 {

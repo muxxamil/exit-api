@@ -1,4 +1,8 @@
 'use strict';
+const defaults  = require('../config/defaults');
+const sequelize = require('sequelize');
+const moment    = require('moment');
+const Op        = sequelize.Op;
 
 module.exports = function (sequelize, DataTypes) {
 
@@ -58,6 +62,14 @@ module.exports = function (sequelize, DataTypes) {
 
         tableName: 'user_hours_quota'
     });
+
+    UserHoursQuota.getQuota = (params) => {
+      let whereClause = UserHoursQuota.getRawParams(params);
+      whereClause.expiry = {[Op.gte]: moment().format(defaults.dateTimeFormat)}
+      return UserHoursQuota.findAndCountAll({
+        where: UserHoursQuota.getRawParams(params)
+      });
+    }
 
     UserHoursQuota.deductQuota = (params) => {
       let updateValues = {};

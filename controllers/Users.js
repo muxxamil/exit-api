@@ -8,6 +8,7 @@ const userMiddleware = require('../middlewares/Users');
 
 const {
     User,
+    UserHoursQuota,
 } = require('../models');
 
 router.get('/', async (req, res, next) => {
@@ -15,12 +16,20 @@ router.get('/', async (req, res, next) => {
         let params = req.query ? req.query : {};
         let usersRes = await User.getUsers(params);
         _.forEach(usersRes.rows, (singleObj) => {
-            console.log(singleObj.id + " " + req.user.id);
             if(singleObj.id != req.user.id) {
                 delete singleObj.password;
             }
         });
         res.send(200, JSON.stringify(usersRes));
+    } catch (err) {
+        next(err);
+    }
+});
+
+router.get('/:id/quota', async (req, res, next) => {
+    try {
+        let userHoursQuotaRes = await UserHoursQuota.getQuota(req.query);
+        res.send(200, JSON.stringify(userHoursQuotaRes));
     } catch (err) {
         next(err);
     }

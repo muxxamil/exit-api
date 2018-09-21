@@ -38,7 +38,10 @@ router.post('/login', async (req, res, next) => {
             return res.status(405).send({ message: req.app.locals.translation.AUTHENTICATION.CREDENTIALS_SUSPENDED });
         }
 
-        res.status(200).send({ token: authenticationHelper.generateToken(userRes) });
+        res.status(200).send({
+            token: authenticationHelper.generateToken(userRes),
+            userInfo: userRes
+        });
 
     } catch (error) {
         next(error);

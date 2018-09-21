@@ -32,7 +32,7 @@ LocationBookingsMiddleware.add = async (req, res, next) => {
     if(_.isEmpty(req.body.bookingForDate)) {
         errorMessages.push(req.app.locals.translation.MISSING_ATTRIBUTES.BOOKING_FOR_DATE);
     }
-    
+
     if(!_.isEmpty(req.body.from) && !_.isEmpty(req.body.to) && moment(req.body.to).diff(moment(req.body.from)) <= 0) {
         errorMessages.push(req.app.locals.translation.CONSTRAINTS.TIME_TO_LESS_THAN_TIME_FROM);
     }
@@ -75,17 +75,6 @@ LocationBookingsMiddleware.add = async (req, res, next) => {
         let staffedHourStart = req.body.bookingForDate + ' ' + staffedHoursArr[dayNumber]['from'];
         let staffedHourEnd   = req.body.bookingForDate + ' ' + staffedHoursArr[dayNumber]['to'];
         
-        console.log("\n\n\n\n\n");
-
-        console.log("dayNumber", dayNumber);
-        console.log("req.body", req.body);
-        console.log("moment(req.body.from)", moment(req.body.from));
-        console.log("staffedHourStart", staffedHourStart);
-        console.log("req.body.to", req.body.to);
-        console.log("moment(req.body.to)", moment(req.body.to));
-        console.log("staffedHourEnd", staffedHourEnd);
-        console.log("moment(staffedHourStart).format(defaults.dateTimeFormat)", moment(staffedHourStart).format(defaults.dateTimeFormat));
-
         let isUnstaffedSchedule = (
             (moment(req.body.to).diff(moment(staffedHourEnd).format(defaults.dateTimeFormat)) > 0) || 
             (moment(req.body.from).diff(moment(staffedHourStart).format(defaults.dateTimeFormat)) < 0) 
@@ -98,10 +87,6 @@ LocationBookingsMiddleware.add = async (req, res, next) => {
         req.body.quotaKey     = quotaKey;
         req.body.bookingHours = bookingHours;
 
-        console.log("userQuota[quotaKey]", userQuota[quotaKey]);
-        console.log("bookingHours", bookingHours);
-        console.log("\n\n\n\n\n");
-        
         if(!rentalLocation.unStaffedHours && isUnstaffedSchedule) {
             errorMessages.push(req.app.locals.translation.CONSTRAINTS.LOCATION_IS_NOT_FOR_UNSTAFFED_HOURS);
         }
