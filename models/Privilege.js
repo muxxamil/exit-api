@@ -1,9 +1,8 @@
 'use strict';
-const _ = require('lodash');
 
 module.exports = function (sequelize, DataTypes) {
 
-    const UserDesignation = sequelize.define('UserDesignation', {
+    const Privilege = sequelize.define('Privilege', {
 
         id: {
             type: DataTypes.INTEGER(11),
@@ -16,7 +15,7 @@ module.exports = function (sequelize, DataTypes) {
             allowNull: false,
         },
         title: {
-            type: DataTypes.STRING(50),
+            type: DataTypes.STRING(100),
             allowNull: false,
         },
         displayOrder: {
@@ -36,24 +35,17 @@ module.exports = function (sequelize, DataTypes) {
         }
     }, {
 
-        tableName: 'definition_user_designations'
+        tableName: 'definition_privileges'
     });
 
-    UserDesignation.CONSTANTS = {
-        CEO: 1,
-        VISITOR: 2,
-        RECEP: 3
+    Privilege.CONSTANTS = {
+        CAN_SEE_DASHBOARD: "CSD",
+        CAN_MANAGE_USERS: "CMU",
+        CAN_MANAGE_BLOG: "CMB",
+        CAN_MANAGE_SCHEDULE: "CMS",
+        CAN_MANAGE_MY_SCHEDULE: "CMMS",
+        CAN_MANAGE_ALL_SCHEDULE: "CMAS",
     }
 
-    UserDesignation.associate = function (models) {
-        UserDesignation.hasMany(models.UserPrivilege, {foreignKey: 'objectId', scope: { object_type: ['designation'] }});
-    };
-
-    UserDesignation.getOnlyPrivKeys = (data) => {
-        return _.map(data, function(obj) {
-            return obj.Privilege.key;
-        });
-    }
-
-    return UserDesignation;
+    return Privilege;
 }

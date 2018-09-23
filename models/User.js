@@ -1,5 +1,7 @@
 'use strict';
 const _         = require('lodash');
+const bbPromise = require('bluebird');
+const moment    = require('moment');
 
 module.exports = function (sequelize, DataTypes) {
 
@@ -79,27 +81,74 @@ module.exports = function (sequelize, DataTypes) {
         let options = {};
         options = User.setPagination(params);
         options.where = User.getRawParams(params);
+        // options.raw = true;
+        options.subQuery = false;
+        let countPromise = User.find({
+            attributes: [ [ sequelize.literal('count(*)'), 'count' ] ],
+            subQuery: false,
+            raw: true,
+            where: _.clone(options.where)
+        });
         options.include = [
             {
                 model : sequelize.models.UserDesignation,
                 attributes: ['title'],
+                include: [
+                    {
+                        model: sequelize.models.UserPrivilege,
+                        attributes: ['privilegeId'],
+                        required: true,
+                        include: [
+                            {
+                                model: sequelize.models.Privilege,
+                                attributes: ['key'],
+                                required: true,
+                            }
+                        ]
+                    }
+                ],
                 required: true
             }
         ];
-        return User.findAndCountAll(options);
-
+        let dataPromise = User.findAll(options);
+        return {
+            dataPromise: dataPromise,
+            countPromise: countPromise
+        }
     }
 
-    User.insertIgnoreUser = async (params) => {
-
-        let userResult = await User.getUsers({email: params.email});
+    User.createNewUser = async (params) => {
+        let [addedUser, designHoursSet] = await bbPromise.all([User.create(User.getRawParams(params)), sequelize.models.DesignationHoursQuotaSet.getDefaultHoursQuotaSet({designationId: params.designationId}) ]);
         
-        if(!_.isEmpty(userResult.rows)) {
-            return Promise.resolve(_.first(userResult.rows));
+        if(!_.isEmpty(addedUser) && !_.isEmpty(designHoursSet)) {
+            designHoursSet = _.first(designHoursSet);
+
+            let quotaParams             = {};
+            quotaParams.userId          = addedUser.id;
+            quotaParams.normalHours     = designHoursSet.normalHours;
+            quotaParams.peakHours       = designHoursSet.peakHours;
+            quotaParams.boardroomHours  = designHoursSet.boardroomHours;
+            quotaParams.unStaffedHours  = designHoursSet.unStaffedHours;
+            quotaParams.expiry          = moment().add(designHoursSet.expiryMonths, 'M');
+            quotaParams.addedBy         = params.addedBy;
+            quotaParams.updatedBy       = params.addedBy;
+
+            await sequelize.models.UserHoursQuota.createUserQuota(quotaParams);
         }
 
-        return User.create(params);
+        return Promise.resolve(addedUser);
+        
     }
+    // User.insertIgnoreUser = async (params) => {
+
+    //     let userResult = await User.getUsers({email: params.email});
+        
+    //     if(!_.isEmpty(userResult.rows)) {
+    //         return Promise.resolve(_.first(userResult.rows));
+    //     }
+
+    //     return User.create(params);
+    // }
 
     return User;
 }

@@ -71,6 +71,13 @@ LocationBookingsMiddleware.add = async (req, res, next) => {
 
         let staffedHoursArr = (!_.isEmpty(rentalLocation.StaffedHours)) ? _.keyBy(rentalLocation.StaffedHours, 'dayNumber') : _.keyBy(rentalLocation.OfficeLocation.StaffedHours, 'dayNumber');
         let dayNumber = moment(req.body.to).day();
+        let peakHours = (!_.isEmpty(staffedHoursArr[dayNumber].peakHours)) ? JSON.parse(staffedHoursArr[dayNumber].peakHours) : [];
+
+        console.log("\n\n\n\n\n");
+
+        console.log("peakHours", JSON.stringify(peakHours));
+
+        console.log("\n\n\n\n\n");
 
         let staffedHourStart = req.body.bookingForDate + ' ' + staffedHoursArr[dayNumber]['from'];
         let staffedHourEnd   = req.body.bookingForDate + ' ' + staffedHoursArr[dayNumber]['to'];
@@ -80,16 +87,74 @@ LocationBookingsMiddleware.add = async (req, res, next) => {
             (moment(req.body.from).diff(moment(staffedHourStart).format(defaults.dateTimeFormat)) < 0) 
         ) ? true : false;
         let bookingHours = moment.duration(moment(req.body.to).diff(moment(req.body.from))).asHours();
-        let quotaKey     = (isUnstaffedSchedule) ? 'unStaffedHours' : 'staffedHours';
+        let quotaKey     = (isUnstaffedSchedule) ? defaults.HOURS_QUOTA.UN_STAFFED_HOURS : defaults.HOURS_QUOTA.NORMAL_HOURS;
+
+        if(!rentalLocation.unStaffedHours && isUnstaffedSchedule) {
+            errorMessages.push(req.app.locals.translation.CONSTRAINTS.LOCATION_IS_NOT_FOR_UNSTAFFED_HOURS);
+        }
+
+        if(rentalLocation.boardroomHours == defaults.FLAG.YES) {
+            quotaKey = defaults.HOURS_QUOTA.BOARDROOM_HOURS
+        }
+
+        req.body.peakHoursDeduction = 0;
+        
+        if(quotaKey == defaults.HOURS_QUOTA.NORMAL_HOURS) {
+            for (let index = 0; index < peakHours.length; index++) {
+                peakHours[index].from   = req.body.bookingForDate + " " + peakHours[index].from;
+                peakHours[index].to     = req.body.bookingForDate + " " + peakHours[index].to;
+
+                let peakFrom = moment(peakHours[index].from).format(defaults.dateTimeFormat);
+                let peakTo   = moment(peakHours[index].to).format(defaults.dateTimeFormat);
+
+                let bookingFrom = moment(req.body.from);
+                let bookingTo   = moment(req.body.to);
+
+                let isPeakSchedule = (
+                    (
+                        (moment(peakFrom).diff(bookingFrom) <= 0) && 
+                        (moment(peakTo).diff(bookingFrom) >= 0) 
+                    ) 
+                    || 
+                    (
+                        (moment(peakFrom).diff(bookingFrom) >= 0) && 
+                        (moment(peakFrom).diff(bookingTo) <= 0) 
+                    )
+                ) ? true : false;
+
+                if(isPeakSchedule) {
+                    let diffFrom = (moment(peakFrom).diff(bookingFrom) >= 0) ? peakFrom : bookingFrom;
+                    let diffTo = (moment(peakTo).diff(bookingTo) <= 0) ? peakTo : bookingTo;
+
+                    req.body.peakHoursDeduction += moment.duration(moment(diffTo).diff(moment(diffFrom))).asHours();
+                }
+            }
+            bookingHours -= req.body.peakHoursDeduction;
+
+            if(!_.isEmpty(userQuota) && userQuota[quotaKey] < bookingHours && 
+            (userQuota[defaults.HOURS_QUOTA.PEAK_HOURS] - req.body.peakHoursDeduction) >= (bookingHours - userQuota[quotaKey])) {
+                req.body.peakHoursDeduction += (bookingHours - userQuota[quotaKey]);
+                bookingHours -= (bookingHours - userQuota[quotaKey]);
+            }
+
+            if(rentalLocation.quotaImpact && (_.isEmpty(userQuota) || userQuota[defaults.HOURS_QUOTA.PEAK_HOURS] < req.body.peakHoursDeduction)) {
+                errorMessages.push(req.app.locals.translation.CONSTRAINTS.INSUFFICIENT_QUOTA);
+            }
+
+            req.body.peakHoursAfterDeduction = userQuota[defaults.HOURS_QUOTA.PEAK_HOURS] - req.body.peakHoursDeduction;
+        }
+
         req.body.active       = defaults.FLAG.YES;
         req.body.bookedBy     = req.user.id;
         req.body.quotaImpact  = rentalLocation.quotaImpact;
         req.body.quotaKey     = quotaKey;
         req.body.bookingHours = bookingHours;
 
-        if(!rentalLocation.unStaffedHours && isUnstaffedSchedule) {
-            errorMessages.push(req.app.locals.translation.CONSTRAINTS.LOCATION_IS_NOT_FOR_UNSTAFFED_HOURS);
-        }
+        console.log("\n\n\n\n\n");
+
+        console.log("req.body", JSON.stringify(req.body));
+
+        console.log("\n\n\n\n\n");
         
         if(rentalLocation.quotaImpact && (_.isEmpty(userQuota) || userQuota[quotaKey] < bookingHours)) {
             errorMessages.push(req.app.locals.translation.CONSTRAINTS.INSUFFICIENT_QUOTA);

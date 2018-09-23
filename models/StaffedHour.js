@@ -30,10 +30,15 @@ module.exports = function (sequelize, DataTypes) {
               field: 'from',
               allowNull: false,
           },
-          to  : {
+          to: {
               type: DataTypes.TIME,
               field: 'to',
               allowNull: false,
+          },
+          peakHours: {
+              type: DataTypes.TEXT,
+              field: 'peak_hours',
+              allowNull: true,
           },
           createdAt: {
             type: DataTypes.DATE,

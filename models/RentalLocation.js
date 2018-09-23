@@ -40,6 +40,11 @@ module.exports = function (sequelize, DataTypes) {
               field: 'un_staffed_hours_booking',
               allowNull: false,
           },
+          boardroomHours: {
+              type: DataTypes.BOOLEAN,
+              field: 'boardroom_hours',
+              allowNull: false,
+          },
           quotaImpact: {
               type: DataTypes.BOOLEAN,
               defaultValue: true,

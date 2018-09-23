@@ -1,5 +1,6 @@
 'use strict';
 const _             = require('lodash');
+const bbPromise     = require('bluebird');
 const moment        = require('moment');
 const sequelize     = require('sequelize');
 const Op            = sequelize.Op;
@@ -98,7 +99,14 @@ module.exports = function (sequelize, DataTypes) {
     LocationBooking.bookRentalLocation = async (params) => {
         let locationBookingResult = await LocationBooking.create(LocationBooking.getRawParams(params));
         if(!_.isEmpty(locationBookingResult) && params.quotaImpact) {
-            await sequelize.models.UserHoursQuota.deductQuota({quotaType: params.quotaKey, deductionValue: params.bookingHours, userId: params.bookedBy, quotaAfterDeduction: params.quotaAfterDeduction});
+            let quotaDeductionPromises = [];
+            quotaDeductionPromises.push(sequelize.models.UserHoursQuota.deductQuota({quotaType: params.quotaKey, userId: params.bookedBy, quotaAfterDeduction: params.quotaAfterDeduction}));
+            
+            if(params.peakHoursDeduction && params.peakHoursDeduction > 0) {
+                quotaDeductionPromises.push(sequelize.models.UserHoursQuota.deductQuota({quotaType: defaults.HOURS_QUOTA.PEAK_HOURS, userId: params.bookedBy, quotaAfterDeduction: params.peakHoursAfterDeduction}));
+            }
+
+            await bbPromise.all(quotaDeductionPromises);
         }
         return true;
     }

@@ -19,14 +19,28 @@ module.exports = function (sequelize, DataTypes) {
             field: 'userid',
             allowNull: false,
           },
-          staffedHours: {
+          normalHours: {
             type: DataTypes.FLOAT,
-            field: 'staffed_hours',
+            field: 'normal_hours',
+            defaultValue: 0,
+            allowNull: false,
+          },
+          peakHours: {
+            type: DataTypes.FLOAT,
+            field: 'peak_hours',
+            defaultValue: 0,
+            allowNull: false,
+          },
+          boardroomHours: {
+            type: DataTypes.FLOAT,
+            field: 'boardroom_hours',
+            defaultValue: 0,
             allowNull: false,
           },
           unStaffedHours: {
             type: DataTypes.FLOAT,
             field: 'un_staffed_hours',
+            defaultValue: 0,
             allowNull: false,
           },
           addedBy: {
@@ -46,6 +60,7 @@ module.exports = function (sequelize, DataTypes) {
           },
           deleted: {
               type: DataTypes.BOOLEAN,
+              defaultValue: false,
               allowNull: false,
           },
           createdAt: {
@@ -76,6 +91,10 @@ module.exports = function (sequelize, DataTypes) {
       updateValues[params.quotaType] = params.quotaAfterDeduction;
       updateValues[params.updatedBy] = params.userId;
       return UserHoursQuota.update(updateValues, {where: { userId: params.userId }});
+    }
+
+    UserHoursQuota.createUserQuota = (params) => {
+      return UserHoursQuota.create(UserHoursQuota.getRawParams(params))
     }
 
     return UserHoursQuota;

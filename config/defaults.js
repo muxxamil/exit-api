@@ -25,4 +25,11 @@ config.FLAG                     = {
     NO: false,
 };
 
+config.HOURS_QUOTA              = {
+    NORMAL_HOURS: 'normalHours',
+    PEAK_HOURS: 'peakHours',
+    BOARDROOM_HOURS: 'boardroomHours',
+    UN_STAFFED_HOURS: 'unStaffedHours',
+};
+
 module.exports = config;

@@ -14,13 +14,14 @@ const {
 router.get('/', async (req, res, next) => {
     try {
         let params = req.query ? req.query : {};
-        let usersRes = await User.getUsers(params);
+        let userDataAndCountPromises = User.getUsers(params);
+        let [data, count] = await bbPromise.all([userDataAndCountPromises.dataPromise, userDataAndCountPromises.countPromise]);
         _.forEach(usersRes.rows, (singleObj) => {
             if(singleObj.id != req.user.id) {
                 delete singleObj.password;
             }
         });
-        res.send(200, JSON.stringify(usersRes));
+        res.send(200, {count: _.isEmpty(count) ? 0 : count.count, rows: data});
     } catch (err) {
         next(err);
     }
@@ -46,7 +47,8 @@ router.put('/:id', userMiddleware.editUser, async (req, res, next) => {
 
 router.post('/', userMiddleware.addUser, async (req, res, next) => {
     try {
-        let usersRes = await User.create(User.getRawParams(req.body));
+        let usersRes = await User.createNewUser(User.getRawParams(req.body));
+        console.log("usersRes", JSON.stringify(usersRes));
         res.send(200, JSON.stringify(usersRes));
     } catch (err) {
         next(err);
