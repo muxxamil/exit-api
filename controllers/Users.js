@@ -3,6 +3,7 @@ const express = require('express');
 const router = express.Router();
 const sequelize = require('sequelize');
 const _         = require('lodash');
+const bbPromise = require('bluebird');
 const op = sequelize.Op;
 const userMiddleware = require('../middlewares/Users');
 
@@ -16,7 +17,7 @@ router.get('/', async (req, res, next) => {
         let params = req.query ? req.query : {};
         let userDataAndCountPromises = User.getUsers(params);
         let [data, count] = await bbPromise.all([userDataAndCountPromises.dataPromise, userDataAndCountPromises.countPromise]);
-        _.forEach(usersRes.rows, (singleObj) => {
+        _.forEach(data, (singleObj) => {
             if(singleObj.id != req.user.id) {
                 delete singleObj.password;
             }
