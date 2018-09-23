@@ -79,9 +79,8 @@ module.exports = function (sequelize, DataTypes) {
     User.getUsers = (params) => {
 
         let options = {};
-        options = User.setPagination(params);
+        // options = User.setPagination(params);
         options.where = User.getRawParams(params);
-        // options.raw = true;
         options.subQuery = false;
         let countPromise = User.find({
             attributes: [ [ sequelize.literal('count(*)'), 'count' ] ],
