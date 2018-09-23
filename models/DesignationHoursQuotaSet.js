@@ -60,7 +60,9 @@ module.exports = function (sequelize, DataTypes) {
     });
 
     DesignationHoursQuotaSet.getDefaultHoursQuotaSet = (params = []) => {
-        return DesignationHoursQuotaSet.findAll(DesignationHoursQuotaSet.getRawParams(params));
+        return DesignationHoursQuotaSet.findAll({
+          where: DesignationHoursQuotaSet.getRawParams(params)
+        });
     }
 
 
