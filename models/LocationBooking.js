@@ -76,6 +76,7 @@ module.exports = function (sequelize, DataTypes) {
                 // tempObj.to      = moment(data[index].to).format(defaults.amPmTimeFormat);
                 tempObj.from    = data[index].from;
                 tempObj.to      = data[index].to;
+                tempObj.by      = data[index].User.name;
                 formattedResult.push(tempObj);
             }
         }
