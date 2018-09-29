@@ -76,7 +76,7 @@ module.exports = function (sequelize, DataTypes) {
                 // tempObj.to      = moment(data[index].to).format(defaults.amPmTimeFormat);
                 tempObj.from    = data[index].from;
                 tempObj.to      = data[index].to;
-                userCell = (!_.isEmpty(data[index].User.cell)) ? data[index].User.cell : "-"
+                let userCell = (!_.isEmpty(data[index].User.cell)) ? data[index].User.cell : "-"
                 tempObj.by      = data[index].User.name + " (" + userCell + ")";
                 formattedResult.push(tempObj);
             }
