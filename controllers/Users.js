@@ -28,9 +28,9 @@ router.get('/', async (req, res, next) => {
     }
 });
 
-router.get('/:id/quota', async (req, res, next) => {
+router.get('/:userId/quota', async (req, res, next) => {
     try {
-        let userHoursQuotaRes = await UserHoursQuota.getQuota(req.query);
+        let userHoursQuotaRes = await UserHoursQuota.getQuota(req.params);
         res.send(200, JSON.stringify(userHoursQuotaRes));
     } catch (err) {
         next(err);

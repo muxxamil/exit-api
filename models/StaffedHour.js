@@ -40,6 +40,11 @@ module.exports = function (sequelize, DataTypes) {
               field: 'peak_hours',
               allowNull: true,
           },
+          timeZone: {
+              type: DataTypes.STRING(50),
+              field: 'timezone',
+              allowNull: false,
+          },
           createdAt: {
             type: DataTypes.DATE,
             allowNull: false,

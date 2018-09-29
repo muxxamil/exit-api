@@ -32,17 +32,17 @@ router.post('/login', async (req, res, next) => {
             return res.status(409).send({ message: req.app.locals.translation.AUTHENTICATION.MULTIPLE_ACCOUNTS });
         }
 
-        userRes = _.first(userRes); 
+        userRes = _.first(userRes);
+
+        if(_.isEmpty(userRes)) {
+            return res.status(400).send({ message: req.app.locals.translation.AUTHENTICATION.CREDENTIALS_INVALID });
+        }
 
         userRes = userRes.get({ plain: true });
 
         if(!_.isEmpty(userRes) && !_.isEmpty(userRes.UserDesignation) && !_.isEmpty(userRes.UserDesignation.UserPrivileges)) {
             userRes.privileges = UserDesignation.getOnlyPrivKeys(userRes.UserDesignation.UserPrivileges);
             delete userRes.UserDesignation.UserPrivileges;
-        }
-            
-        if(_.isEmpty(userRes)) {
-            return res.status(400).send({ message: req.app.locals.translation.AUTHENTICATION.CREDENTIALS_INVALID });
         }
         
         if(userRes.deleted == true) {

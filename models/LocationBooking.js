@@ -23,12 +23,12 @@ module.exports = function (sequelize, DataTypes) {
               allowNull: false,
           },
           from: {
-              type: DataTypes.DATE,
+              type: DataTypes.INTEGER(11),
               field: 'booking_from',
               allowNull: false,
           },
           to: {
-              type: DataTypes.DATE,
+              type: DataTypes.INTEGER(11),
               field: 'booking_to',
               allowNull: false,
           },
@@ -43,12 +43,14 @@ module.exports = function (sequelize, DataTypes) {
             allowNull: false,
           },
           createdAt: {
-            type: DataTypes.DATE,
+            type: DataTypes.INTEGER(11),
+            defaultValue: moment.utc().valueOf(),
             allowNull: false,
             field: 'created_at'
           },
           updatedAt: {
-            type: DataTypes.DATE,
+            type: DataTypes.INTEGER(11),
+            defaultValue: moment.utc().valueOf(),
             allowNull: false,
             field: 'updated_at'
           }
@@ -69,9 +71,11 @@ module.exports = function (sequelize, DataTypes) {
                 let tempObj     = {};
                 tempObj.id      = data[index].id;
                 tempObj.title   = data[index].RentalLocation.title;
-                tempObj.start   = moment(data[index].from).format(defaults.dateFormat);
-                tempObj.from    = moment(data[index].from).format(defaults.amPmTimeFormat);
-                tempObj.to      = moment(data[index].to).format(defaults.amPmTimeFormat);
+                // tempObj.start   = moment(data[index].from).format(defaults.dateFormat);
+                // tempObj.from    = moment(data[index].from).format(defaults.amPmTimeFormat);
+                // tempObj.to      = moment(data[index].to).format(defaults.amPmTimeFormat);
+                tempObj.from    = data[index].from;
+                tempObj.to      = data[index].to;
                 formattedResult.push(tempObj);
             }
         }
@@ -97,18 +101,22 @@ module.exports = function (sequelize, DataTypes) {
     }
 
     LocationBooking.bookRentalLocation = async (params) => {
-        let locationBookingResult = await LocationBooking.create(LocationBooking.getRawParams(params));
-        if(!_.isEmpty(locationBookingResult) && params.quotaImpact) {
-            let quotaDeductionPromises = [];
-            quotaDeductionPromises.push(sequelize.models.UserHoursQuota.deductQuota({quotaType: params.quotaKey, userId: params.bookedBy, quotaAfterDeduction: params.quotaAfterDeduction}));
-            
-            if(params.peakHoursDeduction && params.peakHoursDeduction > 0) {
-                quotaDeductionPromises.push(sequelize.models.UserHoursQuota.deductQuota({quotaType: defaults.HOURS_QUOTA.PEAK_HOURS, userId: params.bookedBy, quotaAfterDeduction: params.peakHoursAfterDeduction}));
-            }
+        try {
+            let locationBookingResult = await LocationBooking.create(LocationBooking.getRawParams(params));
+            if(!_.isEmpty(locationBookingResult) && params.quotaImpact) {
+                let quotaDeductionPromises = [];
+                quotaDeductionPromises.push(sequelize.models.UserHoursQuota.deductQuota({quotaType: params.quotaKey, userId: params.bookedBy, quotaAfterDeduction: params.quotaAfterDeduction}));
+                
+                if(params.peakHoursDeduction && params.peakHoursDeduction > 0) {
+                    quotaDeductionPromises.push(sequelize.models.UserHoursQuota.deductQuota({quotaType: defaults.HOURS_QUOTA.PEAK_HOURS, userId: params.bookedBy, quotaAfterDeduction: params.peakHoursAfterDeduction}));
+                }
 
-            await bbPromise.all(quotaDeductionPromises);
+                await bbPromise.all(quotaDeductionPromises);
+            }
+            return true;
+        } catch (err) {
+            throw err;
         }
-        return true;
     }
     
     LocationBooking.getLocationBookingBetweenDateRanges = (params) => {

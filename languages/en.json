@@ -24,6 +24,7 @@
         "DATE": "Missing required attribute (date)",
         "FROM": "Missing required attribute (from)",
         "TO": "Missing required attribute (to)",
+        "DAY_NUMBER": "Missing required attribute (DayNumber)",
         "BOOKING_FOR_DATE": "Missing required attribute (bookingForDate)",
         "PRE_POST_DETAIL": "Pre Description or Post Description, atleast one them is required"
     },
@@ -33,6 +34,7 @@
         "TIME_TO_LESS_THAN_TIME_FROM": "'Time To' cannot be less than or Equal to 'Time From'",
         "LOCATION_IS_NOT_FOR_UNSTAFFED_HOURS": "This Location cannot be booked against unStaffed Hours",
         "INSUFFICIENT_QUOTA": "Insufficient Quota for this booking",
-        "BOOKING_ALREADY_EXIST": "Booking already exist in this range"
+        "BOOKING_ALREADY_EXIST": "Booking already exist in this range",
+        "TIMEZONE_NOT_DETECTED": "Unable to detect Timezone, Kindly try booking with some updated Browser"
     }
 }

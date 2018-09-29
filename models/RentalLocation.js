@@ -81,6 +81,29 @@ module.exports = function (sequelize, DataTypes) {
         RentalLocation.hasMany(models.StaffedHour, {foreignKey: 'objectId', scope: { object_type: ['rental_location'] }});
     };
 
+    RentalLocation.getDetailedRentalLocation = (id) => {
+        return RentalLocation.findOne({
+            include: [
+                {
+                    model: sequelize.models.OfficeLocation,
+                    attributes: ['id'],
+                    required: true,
+                    include: [
+                        {
+                            required: true,
+                            model: sequelize.models.StaffedHour
+                        }
+                    ]
+                },
+                {
+                    model: sequelize.models.StaffedHour
+                }
+            ],
+            where: {
+                id: id
+            }
+        });
+    }
     RentalLocation.getRentalLocations = (params) => {
         let options             = {};
         options.attributes      = ['id', 'title'];
@@ -90,27 +113,24 @@ module.exports = function (sequelize, DataTypes) {
     }
     
     RentalLocation.getBookings = async (params) => {
-        let startOfDate = moment().format(defaults.dateTimeFormat);
         let options     = {};
         options.where   = {};
-        if(!_.isEmpty(params.date)) {
-            startOfDate     = moment(params.date).startOf('day').format(defaults.dateTimeFormat);
-            const endOfDate = moment(params.date).endOf('day').format(defaults.dateTimeFormat); // set to 23:59 pm today
+        if(!_.isEmpty(params.from) && !_.isEmpty(params.to)) {
             options.where = {
                 [Op.and]: [
                     {
-                        from: { [Op.gte]: startOfDate }
+                        from: { [Op.gte]: params.from }
                     },
                     {
-                        from: { [Op.lte]: endOfDate }
+                        from: { [Op.lte]: params.to }
                     }
                 ]
             };
         } else {
             options.where = (params.futureBookings) ? {
-                from: { [Op.gte]: startOfDate }
+                from: { [Op.gte]: params.from }
             } : {
-                from: { [Op.lte]: startOfDate }
+                from: { [Op.lte]: params.from }
             };
         }
 
