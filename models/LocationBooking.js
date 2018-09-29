@@ -96,7 +96,7 @@ module.exports = function (sequelize, DataTypes) {
                 },
                 {
                     model: sequelize.models.User,
-                    attributes: ['name']
+                    attributes: ['name', 'cell']
                 }
             ]
         });
