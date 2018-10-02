@@ -1,4 +1,4 @@
-'use strict';
+-'use strict';
 
 module.exports = function (sequelize, DataTypes) {
 
@@ -45,6 +45,7 @@ module.exports = function (sequelize, DataTypes) {
         CAN_MANAGE_SCHEDULE: "CMS",
         CAN_MANAGE_MY_SCHEDULE: "CMMS",
         CAN_MANAGE_ALL_SCHEDULE: "CMAS",
+        CAN_CANCEL_BOOKING_ANYTIME: "CCBA",
     }
 
     return Privilege;

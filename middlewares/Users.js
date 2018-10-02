@@ -41,8 +41,8 @@ UserMiddleware.addUser = async (req, res, next) => {
     if(_.isEmpty(req.body.active)) {
         req.body.active = false;
     }
-    req.body.addedBy    = req.user.id;
-    req.body.updatedBy  = req.user.id;
+    req.body.addedBy    = (req.user && req.user.id) ? req.user.id : null;
+    req.body.updatedBy    = (req.user && req.user.id) ? req.user.id : null;
 
     if(!_.isEmpty(errorMessages)) {
         return res.status(400).send({ error: errorMessages });

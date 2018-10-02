@@ -29,6 +29,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(authenticationMiddleware.isAuthenticUser.unless(
   { path: [
       { url: '/authentication/login', methods: ['POST'] },
+      { url: '/users', methods: ['POST'] },
       { url: '/blogPosts', methods: ['GET'] },
       { url: '/rentalLocations', methods: ['GET'] },
       { url: '/rentalLocations/:id/availibility', methods: ['GET'] },

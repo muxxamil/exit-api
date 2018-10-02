@@ -21,12 +21,6 @@ module.exports = function (sequelize, DataTypes) {
             defaultValue: 0,
             allowNull: false,
           },
-          peakHours: {
-            type: DataTypes.FLOAT,
-            field: 'peak_hours',
-            defaultValue: 0,
-            allowNull: false,
-          },
           boardroomHours: {
             type: DataTypes.FLOAT,
             field: 'boardroom_hours',

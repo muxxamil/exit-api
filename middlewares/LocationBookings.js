@@ -54,33 +54,36 @@ LocationBookingsMiddleware.add = async (req, res, next) => {
             });
 
             let [rentalLocation, userQuota] = await bbPromise.all([rentalLocationPromise, userQuotaPromise]);
-    
+            
+            if(!rentalLocation.active) {
+                errorMessages.push(req.app.locals.translation.CONSTRAINTS.CANNOT_BOOK_LOCATION);
+                return res.status(400).send({ error: errorMessages });
+            }
+
             if(_.isEmpty(userQuota)) {
                 errorMessages.push(req.app.locals.translation.CONSTRAINTS.INSUFFICIENT_QUOTA);
                 return res.status(400).send({ error: errorMessages });
             }
-            console.log("\n\n\n\n\n");
+
+            let bookingHours = moment.duration(moment(moment.utc(parseInt(req.body.to)).format(defaults.dateTimeFormat)).diff(moment(moment.utc(parseInt(req.body.from)).format(defaults.dateTimeFormat)))).asHours();
+
+            if(bookingHours > 3) {
+                errorMessages.push(req.app.locals.translation.CONSTRAINTS.CANNOT_BOOK_MORE_THAN_3_HOUR);
+                return res.status(400).send({ error: errorMessages });
+            }
 
             let staffedHoursArr = (!_.isEmpty(rentalLocation.StaffedHours)) ? _.keyBy(rentalLocation.StaffedHours, 'dayNumber') : _.keyBy(rentalLocation.OfficeLocation.StaffedHours, 'dayNumber');
             let dayNumber = moment.utc(parseInt(req.body.to)).day();
-            let peakHours = (!_.isEmpty(staffedHoursArr[dayNumber].peakHours)) ? JSON.parse(staffedHoursArr[dayNumber].peakHours) : [];
+            // let peakHours = (!_.isEmpty(staffedHoursArr[dayNumber].peakHours)) ? JSON.parse(staffedHoursArr[dayNumber].peakHours) : [];
             
             let staffedHourStart = moment(req.body.bookingForDate + ' ' + staffedHoursArr[dayNumber]['from'], defaults.dateTimeFormat);
             let staffedHourEnd   = moment(req.body.bookingForDate + ' ' + staffedHoursArr[dayNumber]['to'], defaults.dateTimeFormat);
-            
-            console.log("\n\n\n\n\n");
-            console.log("staffedHourEnd", JSON.stringify(staffedHourEnd));
-            console.log("staffedHourStart", JSON.stringify(staffedHourStart));
-            console.log("moment(req.body.to, defaults.dateTimeFormat)", JSON.stringify(moment.utc(parseInt(req.body.to))));
-            console.log("staffedHoursArr[dayNumber].timeZone", JSON.stringify(staffedHoursArr[dayNumber].timeZone));
-            console.log("moment(req.body.to, defaults.dateTimeFormat)", JSON.stringify(moment.utc(parseInt(req.body.to)).tz(staffedHoursArr[dayNumber].timeZone).format(defaults.dateTimeFormat)));
-            console.log("moment(parseInt(req.body.from), defaults.dateTimeFormat)", JSON.stringify(moment.utc(parseInt(req.body.from), defaults.dateTimeFormat).tz(staffedHoursArr[dayNumber].timeZone)));
             
             let isUnstaffedSchedule = (
                 (moment(moment.utc(parseInt(req.body.to)).tz(staffedHoursArr[dayNumber].timeZone).format(defaults.dateTimeFormat)).diff(moment(staffedHourEnd)) > 0) || 
                 (moment(moment.utc(parseInt(req.body.from)).tz(staffedHoursArr[dayNumber].timeZone).format(defaults.dateTimeFormat)).diff(moment(staffedHourStart)) < 0) 
             ) ? true : false;
-            let bookingHours = moment.duration(moment(moment.utc(parseInt(req.body.to)).format(defaults.dateTimeFormat)).diff(moment(moment.utc(parseInt(req.body.from)).format(defaults.dateTimeFormat)))).asHours();
+            
             let quotaKey     = (isUnstaffedSchedule) ? defaults.HOURS_QUOTA.UN_STAFFED_HOURS : defaults.HOURS_QUOTA.NORMAL_HOURS;
 
             if(!rentalLocation.unStaffedHours && isUnstaffedSchedule) {
@@ -91,7 +94,7 @@ LocationBookingsMiddleware.add = async (req, res, next) => {
                 quotaKey = defaults.HOURS_QUOTA.BOARDROOM_HOURS
             }
 
-            req.body.peakHoursDeduction = 0;
+            /* req.body.peakHoursDeduction = 0;
             
             if(quotaKey == defaults.HOURS_QUOTA.NORMAL_HOURS) {
                 for (let index = 0; index < peakHours.length; index++) {
@@ -137,7 +140,7 @@ LocationBookingsMiddleware.add = async (req, res, next) => {
                 }
 
                 req.body.peakHoursAfterDeduction = userQuota[defaults.HOURS_QUOTA.PEAK_HOURS] - req.body.peakHoursDeduction;
-            }
+            } */
 
             req.body.active       = defaults.FLAG.YES;
             req.body.bookedBy     = req.user.id;
@@ -145,13 +148,6 @@ LocationBookingsMiddleware.add = async (req, res, next) => {
             req.body.quotaKey     = quotaKey;
             req.body.bookingHours = bookingHours;
 
-            console.log("\n\n\n\n\n");
-
-            console.log("req.body", JSON.stringify(req.body));
-
-            console.log("\n\n\n\n\n");
-            
-            console.log("userQuota", JSON.stringify(userQuota));
             if(rentalLocation.quotaImpact && (_.isEmpty(userQuota) || userQuota[quotaKey] < bookingHours)) {
                 errorMessages.push(req.app.locals.translation.CONSTRAINTS.INSUFFICIENT_QUOTA);
             } else if(rentalLocation.quotaImpact) {
