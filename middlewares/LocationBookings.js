@@ -8,13 +8,61 @@ const moment    = require('moment-timezone');
 const Op        = sequelize.Op;
 const {
     RentalLocation,
-    OfficeLocation,
-    StaffedHour,
     UserHoursQuota,
     LocationBooking,
+    HoursQuotaType,
+    Privilege,
 } = require('../models');
 
 const LocationBookingsMiddleware = {};
+
+LocationBookingsMiddleware.delete = async (req, res, next) => {
+    try {
+        let errorMessages = [];
+
+        let locationBooking = await LocationBooking.findOne(
+            {
+                include: [
+                    {
+                        model: RentalLocation,
+                        attributes: ['quotaImpact']
+                    }
+                ],
+                where: {
+                    id: req.params.id
+                }
+            }
+        );
+
+        if(_.isEmpty(locationBooking) || _.isEmpty(locationBooking.RentalLocation)) {
+            errorMessages.push(req.app.locals.translation.CONSTRAINTS.BOOKING_DOES_NOT_EXIST);            
+            return res.status(400).send({ error: errorMessages });
+        }
+
+        if(_.indexOf(req.user.privileges, Privilege.CONSTANTS.CAN_CANCEL_ALL_BOOKING) == -1 && locationBooking.bookedBy != req.user.id) {
+            errorMessages.push(req.app.locals.translation.PRIVILEGES.CANNOT_CANCEL_THIS_BOOKING);            
+            return res.status(403).send({ error: errorMessages });
+        }
+        
+        
+        req.body.bookingHours = locationBooking.duration;
+        
+        let hoursLeft = moment.duration(moment(moment.utc().format(defaults.dateTimeFormat)).diff(moment(moment.utc(parseInt(locationBooking.from)).format(defaults.dateTimeFormat)))).asHours();
+        
+        if(_.indexOf(req.user.privileges, Privilege.CONSTANTS.CAN_CANCEL_BOOKING_ANYTIME) == -1 && hoursLeft < defaults.CANCEL_BOOKING_LIMIT_HOURS) {
+            errorMessages.push(req.app.locals.translation.PRIVILEGES.CANNOT_CANCEL_BOOKING_NOW);            
+            return res.status(403).send({ error: errorMessages });
+        }
+
+        if(!_.isEmpty(locationBooking.RentalLocation) && locationBooking.RentalLocation.quotaImpact) {
+            req.body.updateQuota = true;            
+        }
+
+        next();
+    } catch (err) {
+        next(err);
+    }
+}
 
 LocationBookingsMiddleware.add = async (req, res, next) => {
     try {
@@ -28,10 +76,6 @@ LocationBookingsMiddleware.add = async (req, res, next) => {
 
         if(_.isEmpty(req.body.to)) {
             errorMessages.push(req.app.locals.translation.MISSING_ATTRIBUTES.TO);
-        }
-
-        if(_.isEmpty(req.body.timezone)) {
-            errorMessages.push(req.app.locals.translation.CONSTRAINTS.TIMEZONE_NOT_DETECTED);
         }
 
         if(_.isEmpty(req.body.bookingForDate)) {
@@ -69,6 +113,11 @@ LocationBookingsMiddleware.add = async (req, res, next) => {
 
             if(bookingHours > 3) {
                 errorMessages.push(req.app.locals.translation.CONSTRAINTS.CANNOT_BOOK_MORE_THAN_3_HOUR);
+                return res.status(400).send({ error: errorMessages });
+            }
+
+            if(bookingHours < 1) {
+                errorMessages.push(req.app.locals.translation.CONSTRAINTS.CANNOT_BOOK_LESS_THAN_1_HOUR);
                 return res.status(400).send({ error: errorMessages });
             }
 
@@ -142,11 +191,18 @@ LocationBookingsMiddleware.add = async (req, res, next) => {
                 req.body.peakHoursAfterDeduction = userQuota[defaults.HOURS_QUOTA.PEAK_HOURS] - req.body.peakHoursDeduction;
             } */
 
+            let hoursQuotaType = await HoursQuotaType.findOne({
+                where: {
+                    key: quotaKey
+                }
+            });
+
             req.body.active       = defaults.FLAG.YES;
             req.body.bookedBy     = req.user.id;
             req.body.quotaImpact  = rentalLocation.quotaImpact;
             req.body.quotaKey     = quotaKey;
-            req.body.bookingHours = bookingHours;
+            req.body.duration     = bookingHours;
+            req.body.quotaType    = hoursQuotaType.id;
 
             if(rentalLocation.quotaImpact && (_.isEmpty(userQuota) || userQuota[quotaKey] < bookingHours)) {
                 errorMessages.push(req.app.locals.translation.CONSTRAINTS.INSUFFICIENT_QUOTA);

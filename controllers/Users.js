@@ -30,7 +30,6 @@ router.get('/', async (req, res, next) => {
 
 router.get('/:userId/quota', async (req, res, next) => {
     try {
-        console.log(req);
         let userHoursQuotaRes = await UserHoursQuota.getQuota(req.params);
         res.send(200, JSON.stringify(userHoursQuotaRes));
     } catch (err) {
@@ -40,7 +39,9 @@ router.get('/:userId/quota', async (req, res, next) => {
 
 router.put('/:id', userMiddleware.editUser, async (req, res, next) => {
     try {
-        let usersRes = await User.update(User.getRawParams(req.body), {where: {id: req.params.id} });
+        let usersEditPromise = User.update(User.getRawParams(req.body), {where: {id: req.params.id} });
+        let usersQuotaEditPromise = UserHoursQuota.update(UserHoursQuota.getRawParams(req.body), {where: {userId: req.params.id} });
+        let [usersRes, userQuotaRes] = await bbPromise.all([usersEditPromise, usersQuotaEditPromise]);
         res.send(200, JSON.stringify(usersRes));
     } catch (err) {
         next(err);
@@ -50,7 +51,6 @@ router.put('/:id', userMiddleware.editUser, async (req, res, next) => {
 router.post('/', userMiddleware.addUser, async (req, res, next) => {
     try {
         let usersRes = await User.createNewUser(User.getRawParams(req.body));
-        console.log("usersRes", JSON.stringify(usersRes));
         res.send(200, JSON.stringify(usersRes));
     } catch (err) {
         next(err);

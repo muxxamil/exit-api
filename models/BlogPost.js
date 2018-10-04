@@ -215,7 +215,6 @@ module.exports = function (sequelize, DataTypes) {
 
     BlogPost.createBlogPost = async (params) => {
         let createBlogPostResult = await BlogPost.create(BlogPost.getRawParams(params));
-        console.log("createBlogPostResult", JSON.stringify(createBlogPostResult));
         let extraBlogPostEnteriesPromises = [];
         if(params.tagIds) {
             let tagMappingParams = {

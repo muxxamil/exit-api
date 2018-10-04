@@ -32,6 +32,15 @@ module.exports = function (sequelize, DataTypes) {
               field: 'booking_to',
               allowNull: false,
           },
+          duration: {
+            type: DataTypes.FLOAT,
+            allowNull: false,
+          },
+          quotaType: {
+            type: DataTypes.INTEGER(11),
+            field: 'quota_type',
+            allowNull: false,
+          },
           bookedBy: {
             type: DataTypes.INTEGER(11),
             field: 'booked_by',
@@ -64,6 +73,42 @@ module.exports = function (sequelize, DataTypes) {
         LocationBooking.belongsTo(models.User, {foreignKey: 'bookedBy'});
     };
 
+    LocationBooking.deleteBooking = async (params) => {
+        let deleteLocationBookingPromise = LocationBooking.update({deleted: defaults.FLAG.YES}, {where: {id: params.id}});
+        let getLocationBookingPromise = LocationBooking.findOne(
+            {
+                include: [
+                    {
+                        model: sequelize.models.RentalLocation,
+                        attributes: ['quotaImpact']
+                    }
+                ],
+                where: {
+                    id: params.id
+                }
+            }
+        );
+
+        let [deleteLocationBooking, locationBooking] = await bbPromise.all([deleteLocationBookingPromise, getLocationBookingPromise]);
+
+        if(!_.isEmpty(deleteLocationBooking)) {
+
+            if(params.updateQuota) {
+                let options = {
+                    where: {
+                        userId: locationBooking.bookedBy
+                    }
+                };
+
+                let userQuota = await sequelize.models.UserHoursQuota.findOne(options);
+                options[sequelize.models.HoursQuotaType.CONSTANTS[locationBooking.quotaType]] = userQuota[sequelize.models.HoursQuotaType.CONSTANTS[locationBooking.quotaType]] + params.bookingHours;
+                await userQuota.update(options);
+            }
+    
+            return true;
+        }
+        return false;
+    }
     LocationBooking.formatAccordingToEvents = (data) => {
         let formattedResult = [];
         if(!_.isEmpty(data)) {
@@ -154,6 +199,7 @@ module.exports = function (sequelize, DataTypes) {
             ]
         };
 
+        whereClause.deleted = defaults.FLAG.NO;
         if(params.rentalLocationId) {
             whereClause.rentalLocationId = params.rentalLocationId;
         }

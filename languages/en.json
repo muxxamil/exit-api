@@ -18,6 +18,9 @@
         "PASSWORD": "Missing required attribute (password)",
         "EMAIL": "Missing required attribute (email)",
         "DESIGNATION_ID": "Missing required attribute (designationId)",
+        "NORMAL_HOURS": "Missing required attribute (normalHours)",
+        "BOARDROOM_HOURS": "Missing required attribute (boardroomHours)",
+        "UNSTAFFED_HOURS": "Missing required attribute (unStaffedHours)",
         "ADDED_BY": "Missing required attribute (addedBy)",
         "UPDATED_BY": "Missing required attribute (updateBy)",
         "TITLE": "Missing required attribute (title)",
@@ -34,9 +37,15 @@
         "TIME_TO_LESS_THAN_TIME_FROM": "'Time To' cannot be less than or Equal to 'Time From'",
         "LOCATION_IS_NOT_FOR_UNSTAFFED_HOURS": "This Location cannot be booked against unStaffed Hours",
         "CANNOT_BOOK_LOCATION": "This Location isn't available for Booking",
+        "BOOKING_DOES_NOT_EXIST": "Such Booking doesn't exist",
         "CANNOT_BOOK_MORE_THAN_3_HOUR": "Booking cannot be more than 3 Hours.",
-        "INSUFFICIENT_QUOTA": "Insufficient Quota for this booking",
+        "CANNOT_BOOK_LESS_THAN_1_HOUR": "Booking cannot be less than 1 Hour.",
+        "INSUFFICIENT_QUOTA": "You have used your full hours for the week",
         "BOOKING_ALREADY_EXIST": "Booking already exist in this range",
         "TIMEZONE_NOT_DETECTED": "Unable to detect Timezone, Kindly try booking with some updated Browser"
+    },
+    "PRIVILEGES": {
+        "CANNOT_CANCEL_THIS_BOOKING": "You do not have Privilege to Cancel this Booking",
+        "CANNOT_CANCEL_BOOKING_NOW": "You do not have Privilege to Cancel this Booking on this Stage"
     }
 }

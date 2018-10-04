@@ -20,6 +20,7 @@ config.page                     = 0;
 config.sortOrder                = {DESC : 'DESC', ASC : 'ASC'};
 config.tokenDuration            = '10h';
 
+config.CANCEL_BOOKING_LIMIT_HOURS = 16; 
 config.FLAG                     = {
     YES: true,
     NO: false,

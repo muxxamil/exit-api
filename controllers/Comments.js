@@ -11,7 +11,6 @@ const {
 
 router.post('/', commentMiddleware.addComment, async (req, res, next) => {
     try {
-        console.log("req", req);
         let commentResult = await Comment.addComment(req.body);
         res.status(200).send(commentResult);
     } catch (err) {

@@ -134,6 +134,8 @@ module.exports = function (sequelize, DataTypes) {
             };
         }
 
+        options.where.deleted = defaults.FLAG.NO;
+
         if(params.rentalLocationId) {
             options.where.rentalLocationId = params.rentalLocationId;
         }

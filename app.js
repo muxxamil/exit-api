@@ -39,10 +39,6 @@ app.use(authenticationMiddleware.isAuthenticUser.unless(
 
 routes(app);
 
-// catch 404 and forward to error handler
-app.use(function(req, res, next) {
-  next(createError(404));
-});
 
 // Catch error from all over the application here & pass to response middleware.
 app.use(function (err, req, res, next) {
@@ -51,8 +47,13 @@ app.use(function (err, req, res, next) {
   if (err.code === 'permission_denied') {
     res.status(401).send('insufficient permissions');
   }else{
-      responseHandler.sendError(err, res);
+    responseHandler.sendError(err, res);
   }
+});
+
+// catch 404 and forward to error handler
+app.use(function(req, res, next) {
+  next(createError(404));
 });
 
 module.exports = app;

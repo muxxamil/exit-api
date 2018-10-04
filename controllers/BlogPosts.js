@@ -31,7 +31,6 @@ router.post('/', blogPostMiddleware.addPost, async (req, res, next) => {
 
 router.delete('/', async (req, res, next) => {
     try {
-        console.log(req.query.ids);
         
         if(_.isEmpty(req.query.ids)) {
             return res.send(400, {});
