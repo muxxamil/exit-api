@@ -29,7 +29,8 @@ LocationBookingsMiddleware.delete = async (req, res, next) => {
                     }
                 ],
                 where: {
-                    id: req.params.id
+                    id: req.params.id,
+                    deleted: defaults.FLAG.NO
                 }
             }
         );
