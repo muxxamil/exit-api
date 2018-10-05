@@ -1,11 +1,11 @@
 'use strict';
-const express = require('express');
-const router = express.Router();
-const sequelize = require('sequelize');
-const _         = require('lodash');
-const bbPromise = require('bluebird');
-const op = sequelize.Op;
+const express        = require('express');
+const router         = express.Router();
+const _              = require('lodash');
+const bbPromise      = require('bluebird');
+const md5            = require('md5');
 const userMiddleware = require('../middlewares/Users');
+
 
 const {
     User,
@@ -43,6 +43,15 @@ router.put('/:id', userMiddleware.editUser, async (req, res, next) => {
         let usersQuotaEditPromise = UserHoursQuota.update(UserHoursQuota.getRawParams(req.body), {where: {userId: req.params.id} });
         let [usersRes, userQuotaRes] = await bbPromise.all([usersEditPromise, usersQuotaEditPromise]);
         res.send(200, JSON.stringify(usersRes));
+    } catch (err) {
+        next(err);
+    }
+});
+
+router.put('/:id/resetPassword', userMiddleware.resetPassword, async (req, res, next) => {
+    try {
+        let resetPasswordRes = User.update({ password: md5(req.body.password) }, {where: {id: req.params.id} });
+        res.send(200, JSON.stringify(resetPasswordRes));
     } catch (err) {
         next(err);
     }

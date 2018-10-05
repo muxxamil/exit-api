@@ -14,7 +14,8 @@
         "ADDED_BY_EMAIL": "Missing required attribute (addedByEmail)", 
         "ADDED_BY_NAME": "Missing required attribute (addedByName)",
 
-        "NAME": "Missing required attribute (name)",
+        "FIRST_NAME": "Missing required attribute (firstName)",
+        "LAST_NAME": "Missing required attribute (lastName)",
         "PASSWORD": "Missing required attribute (password)",
         "EMAIL": "Missing required attribute (email)",
         "DESIGNATION_ID": "Missing required attribute (designationId)",

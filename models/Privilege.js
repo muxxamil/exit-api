@@ -47,6 +47,8 @@ module.exports = function (sequelize, DataTypes) {
         CAN_MANAGE_ALL_SCHEDULE: "CMAS",
         CAN_CANCEL_BOOKING_ANYTIME: "CCBA",
         CAN_CANCEL_ALL_BOOKING: "CCAB",
+        CAN_RESET_MY_PASSWORD: "CRMP",
+        CAN_RESET_ALL_PASSWORD: "CRAP",
     }
 
     return Privilege;

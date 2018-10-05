@@ -13,8 +13,14 @@ module.exports = function (sequelize, DataTypes) {
             primaryKey: true,
             autoIncrement: true,
         },
-        name: {
+        firstName: {
             type: DataTypes.STRING(100),
+            field: 'first_name',
+            allowNull: false,
+        },
+        lastName: {
+            type: DataTypes.STRING(100),
+            field: 'last_name',
             allowNull: false,
         },
         email: {

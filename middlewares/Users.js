@@ -1,10 +1,12 @@
 'use strict';
 
 const defaults  = require('../config/defaults');
+const moment         = require('moment');
 const _         = require('lodash');
 const md5       = require('md5');
 const {
     User,
+    Privilege
 } = require('../models');
 
 const UserMiddleware = {};
@@ -12,12 +14,16 @@ const UserMiddleware = {};
 UserMiddleware.addUser = async (req, res, next) => {
     let errorMessages = [];
 
-    if(_.isEmpty(req.body.name)) {
-        errorMessages.push(req.app.locals.translation.MISSING_ATTRIBUTES.NAME);
+    if(_.isEmpty(req.body.firstName)) {
+        errorMessages.push(req.app.locals.translation.MISSING_ATTRIBUTES.FIRST_NAME);
+    }
+
+    if(_.isEmpty(req.body.lastName)) {
+        errorMessages.push(req.app.locals.translation.MISSING_ATTRIBUTES.LAST_NAME);
     }
 
     if(_.isEmpty(req.body.password)) {
-        errorMessages.push(req.app.locals.translation.MISSING_ATTRIBUTES.PASSWORD);
+        req.body.password = md5(moment.utc().valueOf());
     } else {
         req.body.password = md5(req.body.password);
     }
@@ -68,8 +74,12 @@ UserMiddleware.addUser = async (req, res, next) => {
 UserMiddleware.editUser = async (req, res, next) => {
     let errorMessages = [];
 
-    if(_.isEmpty(req.body.name)) {
-        errorMessages.push(req.app.locals.translation.MISSING_ATTRIBUTES.NAME);
+    if(_.isEmpty(req.body.firstName)) {
+        errorMessages.push(req.app.locals.translation.MISSING_ATTRIBUTES.FIRST_NAME);
+    }
+
+    if(_.isEmpty(req.body.lastName)) {
+        errorMessages.push(req.app.locals.translation.MISSING_ATTRIBUTES.LAST_NAME);
     }
 
     if(_.isEmpty(req.body.email)) {
@@ -112,5 +122,27 @@ UserMiddleware.editUser = async (req, res, next) => {
 
     next();
 };
+
+UserMiddleware.resetPassword = (req, res, next) => {
+    let errorMessages = [];
+
+    if(!(_.indexOf(req.user.privileges, Privilege.CONSTANTS.CAN_RESET_ALL_PASSWORD) == -1 ||
+    (req.params.id == req.user.id && _.indexOf(req.user.privileges, Privilege.CONSTANTS.CAN_RESET_MY_PASSWORD)))) {
+        errorMessages.push(req.app.locals.translation.MISSING_ATTRIBUTES.FIRST_NAME);
+        return res.status(400).send({ error: errorMessages });
+    }
+
+    if(_.isEmpty(req.body.password )) {
+        errorMessages.push(req.app.locals.translation.MISSING_ATTRIBUTES.PASSWORD);
+    }
+
+    if(!_.isEmpty(errorMessages)) {
+        return res.status(400).send({ error: errorMessages });
+    }
+
+    req.body.updatedBy = req.user.id;
+
+    next();
+}
 
 module.exports = UserMiddleware;
