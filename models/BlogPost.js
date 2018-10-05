@@ -100,7 +100,7 @@ module.exports = function (sequelize, DataTypes) {
             {
                 model : sequelize.models.User,
                 as: 'AddedBy',
-                attributes: ['name'],
+                attributes: ['firstName'],
                 required: true
             }
             
@@ -152,7 +152,7 @@ module.exports = function (sequelize, DataTypes) {
                             {
                                 model : sequelize.models.User,
                                 as: 'AddedBy',
-                                attributes: ['name'],
+                                attributes: ['firstName'],
                                 required: false,
                             }
                         ],
@@ -165,7 +165,7 @@ module.exports = function (sequelize, DataTypes) {
                     {
                         model : sequelize.models.User,
                         as: 'AddedBy',
-                        attributes: ['name'],
+                        attributes: ['firstName'],
                         required: false,
                     }
                 ]

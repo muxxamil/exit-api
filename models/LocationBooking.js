@@ -122,7 +122,7 @@ module.exports = function (sequelize, DataTypes) {
                 tempObj.from    = data[index].from;
                 tempObj.to      = data[index].to;
                 let userCell = (!_.isEmpty(data[index].User.cell)) ? data[index].User.cell : "-"
-                tempObj.by      = data[index].User.name + " (" + userCell + ")";
+                tempObj.by      = data[index].User.firstName + " (" + userCell + ")";
                 formattedResult.push(tempObj);
             }
         }
@@ -141,7 +141,7 @@ module.exports = function (sequelize, DataTypes) {
                 },
                 {
                     model: sequelize.models.User,
-                    attributes: ['name', 'cell']
+                    attributes: ['firstName', 'cell']
                 }
             ]
         });
