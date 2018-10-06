@@ -33,4 +33,11 @@ config.HOURS_QUOTA              = {
     UN_STAFFED_HOURS: 'unStaffedHours',
 };
 
+config.HOURS_QUOTA_TITLE              = {
+    NORMAL_HOURS: 'Normal Hours',
+    PEAK_HOURS: 'Peak Hours',
+    BOARDROOM_HOURS: 'Boardroom Hours',
+    UN_STAFFED_HOURS: 'UnStaffed Hours',
+};
+
 module.exports = config;

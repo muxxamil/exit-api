@@ -2,6 +2,7 @@
 const defaults  = require('../config/defaults');
 const sequelize = require('sequelize');
 const moment    = require('moment');
+const _         = require('lodash');
 const Op        = sequelize.Op;
 
 module.exports = function (sequelize, DataTypes) {
@@ -17,6 +18,11 @@ module.exports = function (sequelize, DataTypes) {
           userId: {
             type: DataTypes.INTEGER(11),
             field: 'userid',
+            allowNull: false,
+          },
+          typeId: {
+            type: DataTypes.INTEGER(11),
+            field: 'type_id',
             allowNull: false,
           },
           normalHours: {
@@ -72,21 +78,59 @@ module.exports = function (sequelize, DataTypes) {
         tableName: 'user_hours_quota'
     });
 
+    UserHoursQuota.associate = function (models) {
+
+        UserHoursQuota.belongsTo(models.QuotaType, {foreignKey: 'typeId'});
+
+    };
+
     UserHoursQuota.getQuota = (params) => {
       let whereClause = UserHoursQuota.getRawParams(params);
       whereClause.expiry = {[Op.gte]: moment().format(defaults.dateTimeFormat)}
       return UserHoursQuota.findAndCountAll({
-        where: UserHoursQuota.getRawParams(params)
+        where: UserHoursQuota.getRawParams(params),
+        order: [['typeId', defaults.sortOrder.ASC]]
       });
     }
 
-    UserHoursQuota.deductQuota = (params) => {
+    /* UserHoursQuota.deductQuota = (params) => {
       let updateValues = {};
       updateValues[params.quotaType] = params.quotaAfterDeduction;
       updateValues[params.updatedBy] = params.userId;
       return UserHoursQuota.update(updateValues, {where: { userId: params.userId }});
-    }
+    } */
 
+    UserHoursQuota.setQuotaExtension = async (params) => {
+      let alreadyExtesion = await UserHoursQuota.findOne({
+        where: {
+          userId: params.userId,
+          typeId: sequelize.models.QuotaType.CONSTANTS.EXTENSION,
+          expiry: moment(moment.utc().endOf("week").add(1, 'days').valueOf()).format(defaults.dateTimeFormat)
+        }
+      });
+
+      if(!_.isEmpty(alreadyExtesion)) {
+        let options = {
+          normalHours: params.normalHours,
+          boardroomHours: params.boardroomHours,
+          unStaffedHours: params.unStaffedHours,
+          updatedBy: params.updatedBy,
+        };
+
+        return UserHoursQuota.update(options, {where: {id: alreadyExtesion.id}});
+      }
+
+      return UserHoursQuota.create({
+        userId: params.userId,
+        typeId: sequelize.models.QuotaType.CONSTANTS.EXTENSION,
+        normalHours: params.normalHours,
+        boardroomHours: params.boardroomHours,
+        unStaffedHours: params.unStaffedHours,
+        updatedBy: params.updatedBy,
+        addedBy: params.updatedBy,
+        expiry: moment.utc().endOf("week").add(1, 'days')
+      });
+    }
     UserHoursQuota.createUserQuota = (params) => {
       return UserHoursQuota.create(UserHoursQuota.getRawParams(params))
     }

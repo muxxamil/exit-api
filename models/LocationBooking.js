@@ -22,6 +22,11 @@ module.exports = function (sequelize, DataTypes) {
               field: 'rental_location_id',
               allowNull: false,
           },
+          hourQuotaId: {
+              type: DataTypes.INTEGER(11),
+              field: 'hour_quota_id',
+              allowNull: false,
+          },
           from: {
               type: DataTypes.INTEGER(11),
               field: 'booking_from',
@@ -71,6 +76,7 @@ module.exports = function (sequelize, DataTypes) {
     LocationBooking.associate = function (models) {
         LocationBooking.belongsTo(models.RentalLocation, {foreignKey: 'rentalLocationId'});
         LocationBooking.belongsTo(models.User, {foreignKey: 'bookedBy'});
+        LocationBooking.belongsTo(models.UserHoursQuota, {foreignKey: 'hourQuotaId'});
     };
 
     LocationBooking.deleteBooking = async (params) => {
@@ -96,7 +102,7 @@ module.exports = function (sequelize, DataTypes) {
             if(params.updateQuota) {
                 let options = {
                     where: {
-                        userId: locationBooking.bookedBy
+                        id: locationBooking.hourQuotaId
                     }
                 };
 
@@ -150,15 +156,19 @@ module.exports = function (sequelize, DataTypes) {
     LocationBooking.bookRentalLocation = async (params) => {
         try {
             let locationBookingResult = await LocationBooking.create(LocationBooking.getRawParams(params));
+            console.log("params.quotaImpact", params.quotaImpact);
             if(!_.isEmpty(locationBookingResult) && params.quotaImpact) {
-                let quotaDeductionPromises = [];
-                quotaDeductionPromises.push(sequelize.models.UserHoursQuota.deductQuota({quotaType: params.quotaKey, userId: params.bookedBy, quotaAfterDeduction: params.quotaAfterDeduction}));
                 
-                if(params.peakHoursDeduction && params.peakHoursDeduction > 0) {
+                /* if(params.peakHoursDeduction && params.peakHoursDeduction > 0) {
                     quotaDeductionPromises.push(sequelize.models.UserHoursQuota.deductQuota({quotaType: defaults.HOURS_QUOTA.PEAK_HOURS, userId: params.bookedBy, quotaAfterDeduction: params.peakHoursAfterDeduction}));
-                }
-
-                await bbPromise.all(quotaDeductionPromises);
+                } */
+                console.log("\n\n\n\n\n");
+                console.log("params.quotaDeductionArr", JSON.stringify(params.quotaDeductionArr));
+                await bbPromise.all(_.map(params.quotaDeductionArr, (singleObj) => {
+                    console.log("singleObj", JSON.stringify(singleObj));
+                    sequelize.models.UserHoursQuota.update(singleObj, {where: {id: singleObj.where.id}});
+                }));
+                console.log("\n\n\n\n\n");
             }
             return true;
         } catch (err) {

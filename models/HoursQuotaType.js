@@ -36,6 +36,10 @@ module.exports = function (sequelize, DataTypes) {
         1: 'normalHours',
         2: 'boardroomHours',
         3: 'unStaffedHours',
+
+        normalHours: 1,
+        boardroomHours: 2,
+        unStaffedHours: 3,
     };
 
     return HoursQuotaType;

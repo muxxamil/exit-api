@@ -113,9 +113,10 @@ module.exports = function (sequelize, DataTypes) {
     }
     
     RentalLocation.getBookings = async (params) => {
+
         let options     = {};
         options.where   = {};
-        if(!_.isEmpty(params.from) && !_.isEmpty(params.to)) {
+        if(params.from && params.to) {
             options.where = {
                 [Op.and]: [
                     {
@@ -138,6 +139,10 @@ module.exports = function (sequelize, DataTypes) {
 
         if(params.rentalLocationId) {
             options.where.rentalLocationId = params.rentalLocationId;
+        }
+
+        if(params.userId) {
+            options.where.bookedBy = params.userId;
         }
         
         return sequelize.models.LocationBooking.findAll(options);

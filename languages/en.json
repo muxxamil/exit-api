@@ -43,6 +43,7 @@
         "CANNOT_BOOK_LESS_THAN_1_HOUR": "Booking cannot be less than 1 Hour.",
         "INSUFFICIENT_QUOTA": "You have used your full hours for the week",
         "BOOKING_ALREADY_EXIST": "Booking already exist in this range",
+        "QUOTA_NOT_VALID": "Your Quota is not Valid for the selected Range",
         "TIMEZONE_NOT_DETECTED": "Unable to detect Timezone, Kindly try booking with some updated Browser"
     },
     "PRIVILEGES": {

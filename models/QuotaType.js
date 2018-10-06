@@ -1,8 +1,8 @@
--'use strict';
+'use strict';
 
 module.exports = function (sequelize, DataTypes) {
 
-    const Privilege = sequelize.define('Privilege', {
+    const QuotaType = sequelize.define('QuotaType', {
 
         id: {
             type: DataTypes.INTEGER(11),
@@ -15,12 +15,12 @@ module.exports = function (sequelize, DataTypes) {
             allowNull: false,
         },
         title: {
-            type: DataTypes.STRING(100),
+            type: DataTypes.STRING(50),
             allowNull: false,
         },
-        displayOrder: {
+        addedBy: {
             type: DataTypes.INTEGER(11),
-            field: 'display_order',
+            field: 'added_by',
             allowNull: false,
         },
         createdAt: {
@@ -34,23 +34,13 @@ module.exports = function (sequelize, DataTypes) {
             field: 'updated_at'
         }
     }, {
-
-        tableName: 'definition_privileges'
+        tableName: 'definition_quota_types'
     });
 
-    Privilege.CONSTANTS = {
-        CAN_SEE_DASHBOARD: "CSD",
-        CAN_MANAGE_USERS: "CMU",
-        CAN_MANAGE_BLOG: "CMB",
-        CAN_MANAGE_SCHEDULE: "CMS",
-        CAN_MANAGE_MY_SCHEDULE: "CMMS",
-        CAN_MANAGE_ALL_SCHEDULE: "CMAS",
-        CAN_CANCEL_BOOKING_ANYTIME: "CCBA",
-        CAN_CANCEL_ALL_BOOKING: "CCAB",
-        CAN_RESET_MY_PASSWORD: "CRMP",
-        CAN_RESET_ALL_PASSWORD: "CRAP",
-        CAN_CHANGE_ALL_USER_QUOTA: "CCAUQ",
+    QuotaType.CONSTANTS = {
+        DEFAULT: 1,
+        EXTENSION: 2
     }
 
-    return Privilege;
+    return QuotaType;
 }

@@ -11,7 +11,9 @@ const {
     UserHoursQuota,
     LocationBooking,
     HoursQuotaType,
+    DesignationHoursQuotaSet,
     Privilege,
+    QuotaType
 } = require('../models');
 
 const LocationBookingsMiddleware = {};
@@ -91,22 +93,23 @@ LocationBookingsMiddleware.add = async (req, res, next) => {
         if(_.isEmpty(errorMessages)) {
             let rentalLocationPromise = RentalLocation.getDetailedRentalLocation(req.params.id);
 
-            let userQuotaPromise = UserHoursQuota.findOne({
+            let weeklyLimitHoursQuotaPromise = DesignationHoursQuotaSet.findOne({
                 where: {
-                    userId: req.user.id,
-                    expiry: {[Op.gte]: moment().format(defaults.dateTimeFormat)}
+                    designationId: req.user.designationId,
                 }
             });
 
-            let [rentalLocation, userQuota] = await bbPromise.all([rentalLocationPromise, userQuotaPromise]);
+            let startOfWeek = moment.utc(parseInt(req.body.to)).startOf("week").add(1, 'days').utc().valueOf();
+            let endOfWeek = moment.utc(parseInt(req.body.to)).endOf("week").add(1, 'days').utc().valueOf();
             
+            let [rentalLocation, weeklyLimitHoursQuota] = await bbPromise.all([rentalLocationPromise, weeklyLimitHoursQuotaPromise]);
+            
+            console.log("\n\n\n\n");
+            console.log("parseInt(req.body.to)", parseInt(req.body.to));
+            console.log("\n\n\n\n");
+
             if(!rentalLocation.active) {
                 errorMessages.push(req.app.locals.translation.CONSTRAINTS.CANNOT_BOOK_LOCATION);
-                return res.status(400).send({ error: errorMessages });
-            }
-
-            if(_.isEmpty(userQuota)) {
-                errorMessages.push(req.app.locals.translation.CONSTRAINTS.INSUFFICIENT_QUOTA);
                 return res.status(400).send({ error: errorMessages });
             }
 
@@ -135,6 +138,7 @@ LocationBookingsMiddleware.add = async (req, res, next) => {
             ) ? true : false;
             
             let quotaKey     = (isUnstaffedSchedule) ? defaults.HOURS_QUOTA.UN_STAFFED_HOURS : defaults.HOURS_QUOTA.NORMAL_HOURS;
+            let quotaTitle     = (isUnstaffedSchedule) ? defaults.HOURS_QUOTA_TITLE.UN_STAFFED_HOURS : defaults.HOURS_QUOTA_TITLE.NORMAL_HOURS;
 
             if(!rentalLocation.unStaffedHours && isUnstaffedSchedule) {
                 errorMessages.push(req.app.locals.translation.CONSTRAINTS.LOCATION_IS_NOT_FOR_UNSTAFFED_HOURS);
@@ -142,6 +146,7 @@ LocationBookingsMiddleware.add = async (req, res, next) => {
 
             if(rentalLocation.boardroomHours == defaults.FLAG.YES) {
                 quotaKey = defaults.HOURS_QUOTA.BOARDROOM_HOURS
+                quotaTitle = defaults.HOURS_QUOTA_TITLE.BOARDROOM_HOURS
             }
 
             /* req.body.peakHoursDeduction = 0;
@@ -192,26 +197,92 @@ LocationBookingsMiddleware.add = async (req, res, next) => {
                 req.body.peakHoursAfterDeduction = userQuota[defaults.HOURS_QUOTA.PEAK_HOURS] - req.body.peakHoursDeduction;
             } */
 
-            let hoursQuotaType = await HoursQuotaType.findOne({
+            let userQuotaOptions = {
+                where: {
+                    userId: req.user.id,
+                    expiry: {[Op.gte]: moment.utc(parseInt(req.body.to)).format(defaults.dateTimeFormat)}
+                },
+                order: [['typeId', defaults.sortOrder.ASC]]
+            };
+
+            let userQuotaAgainstKeyPromise = UserHoursQuota.findAll(userQuotaOptions);
+
+            let weeklyBookingPromise = RentalLocation.getBookings({quotaType: HoursQuotaType.CONSTANTS[quotaKey], from: startOfWeek, to: endOfWeek, userId: req.user.id});
+
+            let hoursQuotaTypePromise = HoursQuotaType.findOne({
                 where: {
                     key: quotaKey
                 }
             });
 
+            let [userQuotaAgainstKey, hoursQuotaType, weeklyBooking] = await bbPromise.all([userQuotaAgainstKeyPromise, hoursQuotaTypePromise, weeklyBookingPromise]);
+            
+            if(_.isEmpty(userQuotaAgainstKey)) {
+                errorMessages.push(req.app.locals.translation.CONSTRAINTS.QUOTA_NOT_VALID);
+                return res.status(400).send({ error: errorMessages });
+            }
+
             req.body.active       = defaults.FLAG.YES;
             req.body.bookedBy     = req.user.id;
             req.body.quotaImpact  = rentalLocation.quotaImpact;
-            req.body.quotaKey     = quotaKey;
             req.body.duration     = bookingHours;
             req.body.quotaType    = hoursQuotaType.id;
 
-            if(rentalLocation.quotaImpact && (_.isEmpty(userQuota) || userQuota[quotaKey] < bookingHours)) {
-                errorMessages.push(req.app.locals.translation.CONSTRAINTS.INSUFFICIENT_QUOTA);
-            } else if(rentalLocation.quotaImpact) {
-                req.body.quotaAfterDeduction = userQuota[quotaKey] - bookingHours;
+            let formattedUserQuota = _.groupBy(userQuotaAgainstKey, "typeId");
+            let defaultQuotaSet = _.first(formattedUserQuota[QuotaType.CONSTANTS.DEFAULT]);
+            let extendedHours = _.first(formattedUserQuota[QuotaType.CONSTANTS.EXTENSION]);
+            let defaultQuotaKeyHours = (!_.isEmpty(defaultQuotaSet)) ? defaultQuotaSet[quotaKey] : 0;
+            let extendedQuotaKeyHours = (!_.isEmpty(extendedHours)) ? extendedHours[quotaKey] : 0;
+console.log("defaultQuotaKeyHours", JSON.stringify(defaultQuotaKeyHours));
+console.log("extendedQuotaKeyHours", JSON.stringify(extendedQuotaKeyHours));
+console.log("defaultQuotaSet", JSON.stringify(defaultQuotaSet));
+            let weeklyHoursUsed   = _.sumBy(weeklyBooking, 'duration');
+
+            let weeklyQuotaOfDefaultHours = (weeklyLimitHoursQuota[quotaKey] - weeklyHoursUsed >= 0) ? weeklyLimitHoursQuota[quotaKey] - weeklyHoursUsed : 0
+            weeklyQuotaOfDefaultHours = (weeklyQuotaOfDefaultHours < defaultQuotaKeyHours) ? weeklyQuotaOfDefaultHours : defaultQuotaKeyHours;
+console.log("weeklyHoursUsed", JSON.stringify(weeklyHoursUsed));
+console.log("weeklyQuotaOfDefaultHours", JSON.stringify(weeklyQuotaOfDefaultHours));
+
+            if(rentalLocation.quotaImpact) {
+                
+                let quotaDeductionArr = [];
+
+                if(weeklyQuotaOfDefaultHours >= bookingHours) {
+
+                    let defaultQuotaChangeParams = {};
+                    
+                    defaultQuotaChangeParams[quotaKey] = defaultQuotaSet[quotaKey] - bookingHours;
+                    defaultQuotaChangeParams.where = { id: defaultQuotaSet.id };
+                    req.body.hourQuotaId = defaultQuotaSet.id;
+                    quotaDeductionArr.push(defaultQuotaChangeParams);
+
+                } else if((weeklyQuotaOfDefaultHours + extendedQuotaKeyHours) >= bookingHours) {
+
+                    let defaultQuotaChangeParams = {};
+                    let extendedQuotaChangeParams = {};
+                    
+                    bookingHours -= defaultQuotaSet[quotaKey];
+                    defaultQuotaChangeParams[quotaKey] = 0;
+                    defaultQuotaChangeParams.where = { id: defaultQuotaSet.id };
+                    quotaDeductionArr.push(defaultQuotaChangeParams);
+
+                    extendedQuotaChangeParams[quotaKey] = extendedHours[quotaKey] - bookingHours;
+                    extendedQuotaChangeParams.where = {id: extendedHours.id};
+                    req.body.hourQuotaId = extendedHours.id;
+                    quotaDeductionArr.push(extendedQuotaChangeParams);
+
+                } else {
+                    errorMessages.push(`For this week you have only ${(weeklyQuotaOfDefaultHours + extendedQuotaKeyHours)} ${quotaTitle} Remaining.`);
+                    return res.status(400).send({ error: errorMessages });
+                }
+
+                req.body.quotaDeductionArr = quotaDeductionArr;
             }
 
+            console.log("\n\n\n\n\n\n");
+            
             let existingBooking = await LocationBooking.getLocationBookingBetweenDateRanges({ startDate: req.body.from, endDate: req.body.to , rentalLocationId: req.params.id});
+            console.log("\n\n\n\n\n\n");
 
             if(!_.isEmpty(existingBooking)) {
                 errorMessages.push(req.app.locals.translation.CONSTRAINTS.BOOKING_ALREADY_EXIST);

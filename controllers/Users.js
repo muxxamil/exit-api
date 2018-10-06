@@ -30,7 +30,19 @@ router.get('/', async (req, res, next) => {
 
 router.get('/:userId/quota', async (req, res, next) => {
     try {
-        let userHoursQuotaRes = await UserHoursQuota.getQuota(req.params);
+        req.query.userId = req.params.userId;
+        let userHoursQuotaRes = await UserHoursQuota.getQuota(req.query);
+        res.send(200, JSON.stringify(userHoursQuotaRes));
+    } catch (err) {
+        next(err);
+    }
+});
+
+router.post('/:userId/quotaExtension', async (req, res, next) => {
+    try {
+        req.body.userId = req.params.userId;
+        req.body.updatedBy = req.user.id;
+        let userHoursQuotaRes = await UserHoursQuota.setQuotaExtension(req.body);
         res.send(200, JSON.stringify(userHoursQuotaRes));
     } catch (err) {
         next(err);
