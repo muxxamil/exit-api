@@ -10,6 +10,7 @@ const userMiddleware = require('../middlewares/Users');
 const {
     User,
     UserHoursQuota,
+    QuotaType,
 } = require('../models');
 
 router.get('/', async (req, res, next) => {
@@ -32,6 +33,7 @@ router.get('/:userId/quota', async (req, res, next) => {
     try {
         req.query.userId = req.params.userId;
         let userHoursQuotaRes = await UserHoursQuota.getQuota(req.query);
+        userHoursQuotaRes.rows = await UserHoursQuota.formatWeeklyAndMonthlyQuota(userHoursQuotaRes.rows, req.user);
         res.send(200, JSON.stringify(userHoursQuotaRes));
     } catch (err) {
         next(err);
@@ -52,7 +54,7 @@ router.post('/:userId/quotaExtension', async (req, res, next) => {
 router.put('/:id', userMiddleware.editUser, async (req, res, next) => {
     try {
         let usersEditPromise = User.update(User.getRawParams(req.body), {where: {id: req.params.id} });
-        let usersQuotaEditPromise = UserHoursQuota.update(UserHoursQuota.getRawParams(req.body), {where: {userId: req.params.id} });
+        let usersQuotaEditPromise = UserHoursQuota.update(UserHoursQuota.getRawParams(req.body), {where: {userId: req.params.id, typeId: QuotaType.CONSTANTS.DEFAULT} });
         let [usersRes, userQuotaRes] = await bbPromise.all([usersEditPromise, usersQuotaEditPromise]);
         res.send(200, JSON.stringify(usersRes));
     } catch (err) {

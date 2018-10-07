@@ -137,6 +137,10 @@ module.exports = function (sequelize, DataTypes) {
 
         options.where.deleted = defaults.FLAG.NO;
 
+        if(params.quotaType) {
+            options.where.quotaType = params.quotaType;
+        }
+
         if(params.rentalLocationId) {
             options.where.rentalLocationId = params.rentalLocationId;
         }

@@ -103,10 +103,6 @@ LocationBookingsMiddleware.add = async (req, res, next) => {
             let endOfWeek = moment.utc(parseInt(req.body.to)).endOf("week").add(1, 'days').utc().valueOf();
             
             let [rentalLocation, weeklyLimitHoursQuota] = await bbPromise.all([rentalLocationPromise, weeklyLimitHoursQuotaPromise]);
-            
-            console.log("\n\n\n\n");
-            console.log("parseInt(req.body.to)", parseInt(req.body.to));
-            console.log("\n\n\n\n");
 
             if(!rentalLocation.active) {
                 errorMessages.push(req.app.locals.translation.CONSTRAINTS.CANNOT_BOOK_LOCATION);
@@ -233,15 +229,10 @@ LocationBookingsMiddleware.add = async (req, res, next) => {
             let extendedHours = _.first(formattedUserQuota[QuotaType.CONSTANTS.EXTENSION]);
             let defaultQuotaKeyHours = (!_.isEmpty(defaultQuotaSet)) ? defaultQuotaSet[quotaKey] : 0;
             let extendedQuotaKeyHours = (!_.isEmpty(extendedHours)) ? extendedHours[quotaKey] : 0;
-console.log("defaultQuotaKeyHours", JSON.stringify(defaultQuotaKeyHours));
-console.log("extendedQuotaKeyHours", JSON.stringify(extendedQuotaKeyHours));
-console.log("defaultQuotaSet", JSON.stringify(defaultQuotaSet));
             let weeklyHoursUsed   = _.sumBy(weeklyBooking, 'duration');
 
             let weeklyQuotaOfDefaultHours = (weeklyLimitHoursQuota[quotaKey] - weeklyHoursUsed >= 0) ? weeklyLimitHoursQuota[quotaKey] - weeklyHoursUsed : 0
             weeklyQuotaOfDefaultHours = (weeklyQuotaOfDefaultHours < defaultQuotaKeyHours) ? weeklyQuotaOfDefaultHours : defaultQuotaKeyHours;
-console.log("weeklyHoursUsed", JSON.stringify(weeklyHoursUsed));
-console.log("weeklyQuotaOfDefaultHours", JSON.stringify(weeklyQuotaOfDefaultHours));
 
             if(rentalLocation.quotaImpact) {
                 
@@ -279,10 +270,7 @@ console.log("weeklyQuotaOfDefaultHours", JSON.stringify(weeklyQuotaOfDefaultHour
                 req.body.quotaDeductionArr = quotaDeductionArr;
             }
 
-            console.log("\n\n\n\n\n\n");
-            
             let existingBooking = await LocationBooking.getLocationBookingBetweenDateRanges({ startDate: req.body.from, endDate: req.body.to , rentalLocationId: req.params.id});
-            console.log("\n\n\n\n\n\n");
 
             if(!_.isEmpty(existingBooking)) {
                 errorMessages.push(req.app.locals.translation.CONSTRAINTS.BOOKING_ALREADY_EXIST);

@@ -113,6 +113,14 @@ module.exports = function (sequelize, DataTypes) {
                     }
                 ],
                 required: true
+            },
+            {
+                model : sequelize.models.UserHoursQuota,
+                attributes: ['expiry'],
+                required: false,
+                where: {
+                    typeId: sequelize.models.QuotaType.CONSTANTS.DEFAULT
+                }
             }
         ];
         let dataPromise = User.findAll(options);
@@ -130,6 +138,7 @@ module.exports = function (sequelize, DataTypes) {
 
             let quotaParams             = {};
             quotaParams.userId          = addedUser.id;
+            quotaParams.typeId          = sequelize.models.QuotaType.CONSTANTS.DEFAULT;
             quotaParams.normalHours     = designHoursSet.normalHours;
             quotaParams.peakHours       = designHoursSet.peakHours;
             quotaParams.boardroomHours  = designHoursSet.boardroomHours;

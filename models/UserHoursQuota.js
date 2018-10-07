@@ -1,6 +1,7 @@
 'use strict';
 const defaults  = require('../config/defaults');
 const sequelize = require('sequelize');
+const bbPromise = require('bluebird');
 const moment    = require('moment');
 const _         = require('lodash');
 const Op        = sequelize.Op;
@@ -84,11 +85,99 @@ module.exports = function (sequelize, DataTypes) {
 
     };
 
+    UserHoursQuota.formatWeeklyAndMonthlyQuota = async (data, userInfo) => {
+      let formatedData  = {
+          monthlyQuota: {
+            normalHours: 0,
+            boardroomHours: 0,
+            unStaffedHours: 0,
+        },
+        weeklyQuota: {
+          normalHours: 0,
+          boardroomHours: 0,
+          unStaffedHours: 0,
+        }
+      };
+      let startOfWeek   = moment.utc().startOf("week").add(1, 'days').utc().valueOf();
+      let endOfWeek     = moment.utc().endOf("week").add(1, 'days').utc().valueOf();
+      
+      let weeklyBookingPromise         = sequelize.models.RentalLocation.getBookings({from: startOfWeek, to: endOfWeek, userId: userInfo.id});
+      let weeklyLimitHoursQuotaPromise = sequelize.models.DesignationHoursQuotaSet.findOne({
+          where: {
+              designationId: userInfo.designationId,
+          }
+      });
+
+      let [weeklyBooking, weeklyLimitHoursQuota] = await bbPromise.all([weeklyBookingPromise, weeklyLimitHoursQuotaPromise]);
+      let weeklyHoursUsed = _.groupBy(weeklyBooking, 'quotaType');
+      let weeklyHoursUsageSum = {};
+      _.forEach(weeklyHoursUsed, function(value, key) {
+        weeklyHoursUsageSum[key] = _.sumBy(value, 'duration');
+      });
+
+      let formattedUserQuota = _.groupBy(data, "typeId");
+      let defaultQuotaSet = _.first(formattedUserQuota[sequelize.models.QuotaType.CONSTANTS.DEFAULT]);
+      let extendedHours = _.first(formattedUserQuota[sequelize.models.QuotaType.CONSTANTS.EXTENSION]);
+
+      formatedData.weeklyQuota.normalHours = weeklyLimitHoursQuota.normalHours;
+      formatedData.weeklyQuota.boardroomHours = weeklyLimitHoursQuota.boardroomHours;
+      formatedData.weeklyQuota.unStaffedHours = weeklyLimitHoursQuota.unStaffedHours;
+
+      if(!_.isEmpty(weeklyHoursUsageSum[sequelize.models.HoursQuotaType.CONSTANTS.normalHours])) {
+        formatedData.weeklyQuota.normalHours -= weeklyHoursUsageSum[sequelize.models.HoursQuotaType.CONSTANTS.normalHours];
+      }
+
+      if(!_.isEmpty(weeklyHoursUsageSum[sequelize.models.HoursQuotaType.CONSTANTS.boardroomHours])) {
+        formatedData.weeklyQuota.boardroomHours -= weeklyHoursUsageSum[sequelize.models.HoursQuotaType.CONSTANTS.boardroomHours];
+      }
+
+      if(!_.isEmpty(weeklyHoursUsageSum[sequelize.models.HoursQuotaType.CONSTANTS.unStaffedHours])) {
+        formatedData.weeklyQuota.unStaffedHours -= weeklyHoursUsageSum[sequelize.models.HoursQuotaType.CONSTANTS.unStaffedHours];
+      }
+
+      if(!_.isEmpty(defaultQuotaSet)) {
+        
+        formatedData.monthlyQuota.normalHours    = defaultQuotaSet.normalHours;
+        formatedData.monthlyQuota.boardroomHours = defaultQuotaSet.boardroomHours;
+        formatedData.monthlyQuota.unStaffedHours = defaultQuotaSet.unStaffedHours;
+        formatedData.monthlyQuota.expiry         = defaultQuotaSet.expiry;
+
+        if(formatedData.weeklyQuota.normalHours > formatedData.monthlyQuota.normalHours) {
+          formatedData.weeklyQuota.normalHours = formatedData.monthlyQuota.normalHours;
+        }
+
+        if(formatedData.weeklyQuota.boardroomHours > formatedData.monthlyQuota.boardroomHours) {
+          formatedData.weeklyQuota.boardroomHours = formatedData.monthlyQuota.boardroomHours;
+        }
+
+        if(formatedData.weeklyQuota.unStaffedHours > formatedData.monthlyQuota.unStaffedHours) {
+          formatedData.weeklyQuota.unStaffedHours = formatedData.monthlyQuota.unStaffedHours;
+        }
+
+      } else {
+        formatedData.weeklyQuota.normalHours    = 0;
+        formatedData.weeklyQuota.boardroomHours = 0;
+        formatedData.weeklyQuota.unStaffedHours = 0;
+      }
+
+      if(!_.isEmpty(extendedHours)) {
+        formatedData.weeklyQuota.normalHours += extendedHours.normalHours;
+        formatedData.weeklyQuota.boardroomHours += extendedHours.boardroomHours;
+        formatedData.weeklyQuota.unStaffedHours += extendedHours.unStaffedHours;
+        formatedData.weeklyQuota.expiry          = extendedHours.expiry;
+      }
+
+      return formatedData;
+    }
+
     UserHoursQuota.getQuota = (params) => {
       let whereClause = UserHoursQuota.getRawParams(params);
-      whereClause.expiry = {[Op.gte]: moment().format(defaults.dateTimeFormat)}
+      if(whereClause.expiry) {
+        whereClause.expiry = {[Op.gte]: moment(whereClause.expiry).format(defaults.dateTimeFormat)};
+      }
+      // whereClause.expiry = {[Op.gte]: moment.utc().format(defaults.dateTimeFormat)};
       return UserHoursQuota.findAndCountAll({
-        where: UserHoursQuota.getRawParams(params),
+        where: whereClause,
         order: [['typeId', defaults.sortOrder.ASC]]
       });
     }

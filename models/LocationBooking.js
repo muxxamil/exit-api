@@ -156,7 +156,6 @@ module.exports = function (sequelize, DataTypes) {
     LocationBooking.bookRentalLocation = async (params) => {
         try {
             let locationBookingResult = await LocationBooking.create(LocationBooking.getRawParams(params));
-            console.log("params.quotaImpact", params.quotaImpact);
             if(!_.isEmpty(locationBookingResult) && params.quotaImpact) {
                 
                 /* if(params.peakHoursDeduction && params.peakHoursDeduction > 0) {
