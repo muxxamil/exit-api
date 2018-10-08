@@ -25,7 +25,7 @@ module.exports = function (sequelize, DataTypes) {
           hourQuotaId: {
               type: DataTypes.INTEGER(11),
               field: 'hour_quota_id',
-              allowNull: false,
+              allowNull: true,
           },
           from: {
               type: DataTypes.INTEGER(11),
@@ -96,6 +96,10 @@ module.exports = function (sequelize, DataTypes) {
         );
 
         let [deleteLocationBooking, locationBooking] = await bbPromise.all([deleteLocationBookingPromise, getLocationBookingPromise]);
+
+        if(locationBooking.hourQuotaId) {
+            return true;
+        }
 
         if(!_.isEmpty(deleteLocationBooking)) {
 

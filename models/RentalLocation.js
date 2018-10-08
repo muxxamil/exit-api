@@ -76,6 +76,23 @@ module.exports = function (sequelize, DataTypes) {
         tableName: 'rental_locations'
     });
 
+    RentalLocation.CONSTANTS = {
+        5: "CBCD",
+        12: "CBCD",
+        13: "CBCD",
+        14: "CBCD",
+        7: "CBDD",
+        8: "CBHD",
+        9: "CBDORISD",
+        10: "CBVD",
+        11: "CBDVB",
+        3: "CBMU",
+
+        LOCATIONS: {
+            MARGRET_OFFICE: 3
+        }
+    }
+
     RentalLocation.associate = function (models) {
         RentalLocation.belongsTo(models.OfficeLocation, {foreignKey: 'officeLocationId'});
         RentalLocation.hasMany(models.StaffedHour, {foreignKey: 'objectId', scope: { object_type: ['rental_location'] }});

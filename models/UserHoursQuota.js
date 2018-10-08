@@ -118,7 +118,9 @@ module.exports = function (sequelize, DataTypes) {
       let formattedUserQuota = _.groupBy(data, "typeId");
       let defaultQuotaSet = _.first(formattedUserQuota[sequelize.models.QuotaType.CONSTANTS.DEFAULT]);
       let extendedHours = _.first(formattedUserQuota[sequelize.models.QuotaType.CONSTANTS.EXTENSION]);
-
+      console.log("\n\n\n\n\n");
+      console.log("weeklyLimitHoursQuota", JSON.stringify(weeklyLimitHoursQuota));
+      console.log("\n\n\n\n\n");
       formatedData.weeklyQuota.normalHours = weeklyLimitHoursQuota.normalHours;
       formatedData.weeklyQuota.boardroomHours = weeklyLimitHoursQuota.boardroomHours;
       formatedData.weeklyQuota.unStaffedHours = weeklyLimitHoursQuota.unStaffedHours;

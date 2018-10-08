@@ -86,6 +86,12 @@ LocationBookingsMiddleware.add = async (req, res, next) => {
             errorMessages.push(req.app.locals.translation.MISSING_ATTRIBUTES.BOOKING_FOR_DATE);
         }
 
+        if(req.params.id == RentalLocation.CONSTANTS.LOCATIONS.MARGRET_OFFICE && 
+            _.indexOf(req.user.privileges, RentalLocation.CONSTANTS[req.params.id]) == -1) {
+                errorMessages.push(req.app.locals.translation.CONSTRAINTS.CANNOT_BOOK_THIS_OFFICE); 
+                return res.status(400).send({ error: errorMessages });
+        }
+
         if(!_.isEmpty(req.body.from) && !_.isEmpty(req.body.to) &&
         (moment(moment.utc(parseInt(req.body.to)).format(defaults.dateTimeFormat)).diff((moment(moment.utc(parseInt(req.body.from)).format(defaults.dateTimeFormat))))) <= 0) {
             errorMessages.push(req.app.locals.translation.CONSTRAINTS.TIME_TO_LESS_THAN_TIME_FROM);
@@ -285,6 +291,11 @@ LocationBookingsMiddleware.add = async (req, res, next) => {
                 errorMessages.push(req.app.locals.translation.CONSTRAINTS.BOOKING_ALREADY_EXIST);
             }
         }
+
+        console.log("\n\n\n\n\n\n");
+        console.log(JSON.stringify(errorMessages));
+        console.log(JSON.stringify(req.body));
+        console.log("\n\n\n\n\n\n");
 
         if(!_.isEmpty(errorMessages)) {
             return res.status(400).send({ error: errorMessages });

@@ -51,6 +51,12 @@ module.exports = function (sequelize, DataTypes) {
         CAN_RESET_ALL_PASSWORD: "CRAP",
         CAN_CHANGE_ALL_USER_QUOTA: "CCAUQ",
         CAN_BOOK_LOCATION_FOR_ALL_USERS: "CBLFAU",
+        CAN_BOOK_CECIL_DESKS: "CBCD",
+        CAN_BOOK_DONALD_DOWNSTAIRS: "CBDD",
+        CAN_BOOK_HOWARD_DOWNSTAIRS: "CBHD",
+        CAN_BOOK_DORIS_DOWNSTAIRS: "CBDORISD",
+        CAN_BOOK_VINCENT_DOWNSTAIRS: "CBVD",
+        CAN_BOOK_DAV_VAL_BOARDROOM: "CBDVB",
     }
 
     return Privilege;
