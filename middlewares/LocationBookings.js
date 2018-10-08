@@ -13,7 +13,8 @@ const {
     HoursQuotaType,
     DesignationHoursQuotaSet,
     Privilege,
-    QuotaType
+    QuotaType,
+    User
 } = require('../models');
 
 const LocationBookingsMiddleware = {};
@@ -89,13 +90,21 @@ LocationBookingsMiddleware.add = async (req, res, next) => {
         (moment(moment.utc(parseInt(req.body.to)).format(defaults.dateTimeFormat)).diff((moment(moment.utc(parseInt(req.body.from)).format(defaults.dateTimeFormat))))) <= 0) {
             errorMessages.push(req.app.locals.translation.CONSTRAINTS.TIME_TO_LESS_THAN_TIME_FROM);
         }
+
+        let userInfo = {id: req.user.id, designationId: req.user.designationId};
+
+        if(req.body.bookingFor) {
+            let userDataAndCountPromises = User.getUsers({id: req.body.bookingFor});
+            let userRes = await userDataAndCountPromises.dataPromise;
+            userInfo = _.first(userRes);
+        }
         
         if(_.isEmpty(errorMessages)) {
             let rentalLocationPromise = RentalLocation.getDetailedRentalLocation(req.params.id);
 
             let weeklyLimitHoursQuotaPromise = DesignationHoursQuotaSet.findOne({
                 where: {
-                    designationId: req.user.designationId,
+                    designationId: userInfo.designationId,
                 }
             });
 
@@ -195,7 +204,7 @@ LocationBookingsMiddleware.add = async (req, res, next) => {
 
             let userQuotaOptions = {
                 where: {
-                    userId: req.user.id,
+                    userId: userInfo.id,
                     expiry: {[Op.gte]: moment.utc(parseInt(req.body.to)).format(defaults.dateTimeFormat)}
                 },
                 order: [['typeId', defaults.sortOrder.ASC]]
@@ -203,7 +212,7 @@ LocationBookingsMiddleware.add = async (req, res, next) => {
 
             let userQuotaAgainstKeyPromise = UserHoursQuota.findAll(userQuotaOptions);
 
-            let weeklyBookingPromise = RentalLocation.getBookings({quotaType: HoursQuotaType.CONSTANTS[quotaKey], from: startOfWeek, to: endOfWeek, userId: req.user.id});
+            let weeklyBookingPromise = RentalLocation.getBookings({quotaType: HoursQuotaType.CONSTANTS[quotaKey], from: startOfWeek, to: endOfWeek, userId: userInfo.id});
 
             let hoursQuotaTypePromise = HoursQuotaType.findOne({
                 where: {
@@ -219,7 +228,7 @@ LocationBookingsMiddleware.add = async (req, res, next) => {
             }
 
             req.body.active       = defaults.FLAG.YES;
-            req.body.bookedBy     = req.user.id;
+            req.body.bookedBy     = userInfo.id;
             req.body.quotaImpact  = rentalLocation.quotaImpact;
             req.body.duration     = bookingHours;
             req.body.quotaType    = hoursQuotaType.id;

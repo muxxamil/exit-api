@@ -50,6 +50,7 @@ module.exports = function (sequelize, DataTypes) {
         CAN_RESET_MY_PASSWORD: "CRMP",
         CAN_RESET_ALL_PASSWORD: "CRAP",
         CAN_CHANGE_ALL_USER_QUOTA: "CCAUQ",
+        CAN_BOOK_LOCATION_FOR_ALL_USERS: "CBLFAU",
     }
 
     return Privilege;
