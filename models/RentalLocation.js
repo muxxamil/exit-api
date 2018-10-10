@@ -123,7 +123,7 @@ module.exports = function (sequelize, DataTypes) {
     }
     RentalLocation.getRentalLocations = (params) => {
         let options             = {};
-        options.attributes      = ['id', 'title'];
+        options.attributes      = ['id', 'title', 'key'];
         options.where           = RentalLocation.getRawParams(params);
         options.where.deleted   = defaults.FLAG.NO;
         return RentalLocation.findAndCountAll(options);

@@ -44,6 +44,7 @@
         "INSUFFICIENT_QUOTA": "You have used your full hours for the week",
         "BOOKING_ALREADY_EXIST": "Booking already exist in this range",
         "CANNOT_BOOK_THIS_OFFICE": "You cannot book this Office, Please contact support for this",
+        "NO_RENTAL_LOCATION_EXIST": "No such Rental Location Exists",
         "QUOTA_NOT_VALID": "Your Quota is not Valid for the selected Range",
         "TIMEZONE_NOT_DETECTED": "Unable to detect Timezone, Kindly try booking with some updated Browser"
     },

@@ -119,6 +119,11 @@ LocationBookingsMiddleware.add = async (req, res, next) => {
             
             let [rentalLocation, weeklyLimitHoursQuota] = await bbPromise.all([rentalLocationPromise, weeklyLimitHoursQuotaPromise]);
 
+            if(_.isEmpty(rentalLocation)) {
+                errorMessages.push(req.app.locals.translation.CONSTRAINTS.NO_RENTAL_LOCATION_EXIST);
+                return res.status(400).send({ error: errorMessages });
+            }
+            
             if(!rentalLocation.active) {
                 errorMessages.push(req.app.locals.translation.CONSTRAINTS.CANNOT_BOOK_LOCATION);
                 return res.status(400).send({ error: errorMessages });

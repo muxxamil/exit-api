@@ -14,7 +14,9 @@ const {
 
 router.get('/', async (req, res, next) => {
     try {
-        let rentalLocationsResult = await RentalLocation.getRentalLocations({active: defaults.FLAG.YES});
+        let params = req.query;
+        params.active = defaults.FLAG.YES;
+        let rentalLocationsResult = await RentalLocation.getRentalLocations(params);
         res.status(200).send(rentalLocationsResult);
     } catch (err) {
         next(err);
