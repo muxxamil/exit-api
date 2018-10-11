@@ -297,11 +297,6 @@ LocationBookingsMiddleware.add = async (req, res, next) => {
             }
         }
 
-        console.log("\n\n\n\n\n\n");
-        console.log(JSON.stringify(errorMessages));
-        console.log(JSON.stringify(req.body));
-        console.log("\n\n\n\n\n\n");
-
         if(!_.isEmpty(errorMessages)) {
             return res.status(400).send({ error: errorMessages });
         }

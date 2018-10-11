@@ -165,13 +165,9 @@ module.exports = function (sequelize, DataTypes) {
                 /* if(params.peakHoursDeduction && params.peakHoursDeduction > 0) {
                     quotaDeductionPromises.push(sequelize.models.UserHoursQuota.deductQuota({quotaType: defaults.HOURS_QUOTA.PEAK_HOURS, userId: params.bookedBy, quotaAfterDeduction: params.peakHoursAfterDeduction}));
                 } */
-                console.log("\n\n\n\n\n");
-                console.log("params.quotaDeductionArr", JSON.stringify(params.quotaDeductionArr));
                 await bbPromise.all(_.map(params.quotaDeductionArr, (singleObj) => {
-                    console.log("singleObj", JSON.stringify(singleObj));
                     sequelize.models.UserHoursQuota.update(singleObj, {where: {id: singleObj.where.id}});
                 }));
-                console.log("\n\n\n\n\n");
             }
             return true;
         } catch (err) {
