@@ -97,7 +97,7 @@ module.exports = function (sequelize, DataTypes) {
 
         let [deleteLocationBooking, locationBooking] = await bbPromise.all([deleteLocationBookingPromise, getLocationBookingPromise]);
 
-        if(locationBooking.hourQuotaId) {
+        if(!locationBooking.hourQuotaId) {
             return true;
         }
 

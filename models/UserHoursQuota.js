@@ -148,6 +148,8 @@ module.exports = function (sequelize, DataTypes) {
         formatedData.weeklyQuota.unStaffedHours = 0;
       }
 
+      console.log("formatedData", formatedData);
+
       if(!_.isEmpty(extendedHours)) {
         formatedData.weeklyQuota.normalHours += extendedHours.normalHours;
         formatedData.weeklyQuota.boardroomHours += extendedHours.boardroomHours;
@@ -155,20 +157,20 @@ module.exports = function (sequelize, DataTypes) {
         formatedData.weeklyQuota.expiry          = extendedHours.expiry;
       }
 
-      if(weeklyHoursUsageSum[sequelize.models.HoursQuotaType.CONSTANTS.normalHours] &&
-        weeklyHoursUsageSum[sequelize.models.HoursQuotaType.CONSTANTS.normalHours] <= formatedData.weeklyQuota.normalHours) {
+      if(weeklyHoursUsageSum[sequelize.models.HoursQuotaType.CONSTANTS.normalHours]) {
         formatedData.weeklyQuota.normalHours -= weeklyHoursUsageSum[sequelize.models.HoursQuotaType.CONSTANTS.normalHours];
       }
 
-      if(weeklyHoursUsageSum[sequelize.models.HoursQuotaType.CONSTANTS.boardroomHours] &&
-      weeklyHoursUsageSum[sequelize.models.HoursQuotaType.CONSTANTS.boardroomHours] <= formatedData.weeklyQuota.boardroomHours) {
+      if(weeklyHoursUsageSum[sequelize.models.HoursQuotaType.CONSTANTS.boardroomHours]) {
         formatedData.weeklyQuota.boardroomHours -= weeklyHoursUsageSum[sequelize.models.HoursQuotaType.CONSTANTS.boardroomHours];
       }
 
-      if(weeklyHoursUsageSum[sequelize.models.HoursQuotaType.CONSTANTS.unStaffedHours] &&
-      weeklyHoursUsageSum[sequelize.models.HoursQuotaType.CONSTANTS.unStaffedHours] <= formatedData.weeklyQuota.unStaffedHours) {
+      if(weeklyHoursUsageSum[sequelize.models.HoursQuotaType.CONSTANTS.unStaffedHours]) {
         formatedData.weeklyQuota.unStaffedHours -= weeklyHoursUsageSum[sequelize.models.HoursQuotaType.CONSTANTS.unStaffedHours];
       }
+
+      console.log("formatedData", formatedData);
+      console.log("\n\n\n\n\n\n");
 
       return formatedData;
     }

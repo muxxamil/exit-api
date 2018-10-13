@@ -50,9 +50,7 @@ LocationBookingsMiddleware.delete = async (req, res, next) => {
         
         
         req.body.bookingHours = locationBooking.duration;
-        
-        let hoursLeft = moment.duration(moment(moment.utc().format(defaults.dateTimeFormat)).diff(moment(moment.utc(parseInt(locationBooking.from)).format(defaults.dateTimeFormat)))).asHours();
-        
+        let hoursLeft = moment.duration(moment(moment.utc(parseInt(locationBooking.from)).format(defaults.dateTimeFormat)).diff(moment(moment.utc().format(defaults.dateTimeFormat)))).asHours();
         if(_.indexOf(req.user.privileges, Privilege.CONSTANTS.CAN_CANCEL_BOOKING_ANYTIME) == -1 && hoursLeft < defaults.CANCEL_BOOKING_LIMIT_HOURS) {
             errorMessages.push(req.app.locals.translation.PRIVILEGES.CANNOT_CANCEL_BOOKING_NOW);            
             return res.status(403).send({ error: errorMessages });
