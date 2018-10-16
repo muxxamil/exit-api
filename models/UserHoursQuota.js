@@ -181,6 +181,7 @@ module.exports = function (sequelize, DataTypes) {
 
     UserHoursQuota.getQuota = (params) => {
       let whereClause = UserHoursQuota.getRawParams(params);
+      whereClause.expiry = {[Op.gte]: moment.utc().format(defaults.dateTimeFormat)};
       if(whereClause.expiry) {
         whereClause.expiry = {[Op.gte]: moment(whereClause.expiry).format(defaults.dateTimeFormat)};
       }
