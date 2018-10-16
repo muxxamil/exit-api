@@ -248,7 +248,7 @@ LocationBookingsMiddleware.add = async (req, res, next) => {
             let defaultQuotaKeyHours = (!_.isEmpty(defaultQuotaSet)) ? defaultQuotaSet[quotaKey] : 0;
             let extendedQuotaKeyHours = (!_.isEmpty(extendedHours)) ? extendedHours[quotaKey] : 0;
             let weeklyHoursUsed   = _.sumBy(weeklyBooking, 'duration');
-
+console.log("\n\n\n weeklyHoursUsed \n\n\n", JSON.stringify(weeklyHoursUsed));
             let weeklyQuotaOfDefaultHours = (weeklyLimitHoursQuota[quotaKey] - weeklyHoursUsed >= 0) ? weeklyLimitHoursQuota[quotaKey] - weeklyHoursUsed : 0
             weeklyQuotaOfDefaultHours = (weeklyQuotaOfDefaultHours < defaultQuotaKeyHours) ? weeklyQuotaOfDefaultHours : defaultQuotaKeyHours;
 
@@ -270,8 +270,8 @@ LocationBookingsMiddleware.add = async (req, res, next) => {
                     let defaultQuotaChangeParams = {};
                     let extendedQuotaChangeParams = {};
                     
-                    bookingHours -= defaultQuotaSet[quotaKey];
-                    defaultQuotaChangeParams[quotaKey] = 0;
+                    bookingHours -= weeklyQuotaOfDefaultHours;
+                    defaultQuotaChangeParams[quotaKey] = defaultQuotaSet[quotaKey] - weeklyQuotaOfDefaultHours;
                     defaultQuotaChangeParams.where = { id: defaultQuotaSet.id };
                     quotaDeductionArr.push(defaultQuotaChangeParams);
 
