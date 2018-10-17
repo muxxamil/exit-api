@@ -143,21 +143,17 @@ module.exports = function (sequelize, DataTypes) {
         quotaParams.boardroomHours  = 0;
         quotaParams.unStaffedHours  = 0;
         quotaParams.expiry          = moment().format(defaults.dateTimeFormat);
-        quotaParams.addedBy         = params.addedBy;
-        quotaParams.updatedBy       = params.addedBy;
+        quotaParams.addedBy         = params.updatedBy;
+        quotaParams.updatedBy       = params.updatedBy;
 
         if(!_.isEmpty(addedUser) && !_.isEmpty(designHoursSet)) {
             designHoursSet = _.first(designHoursSet);
 
-            quotaParams.userId          = addedUser.id;
-            quotaParams.typeId          = sequelize.models.QuotaType.CONSTANTS.DEFAULT;
             quotaParams.normalHours     = designHoursSet.normalHours;
             quotaParams.peakHours       = designHoursSet.peakHours;
             quotaParams.boardroomHours  = designHoursSet.boardroomHours;
             quotaParams.unStaffedHours  = designHoursSet.unStaffedHours;
             quotaParams.expiry          = moment().add(designHoursSet.expiryMonths, 'M');
-            quotaParams.addedBy         = params.addedBy;
-            quotaParams.updatedBy       = params.addedBy;
         }
 
         await sequelize.models.UserHoursQuota.createUserQuota(quotaParams);
