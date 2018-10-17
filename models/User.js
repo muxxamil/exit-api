@@ -2,6 +2,7 @@
 const _         = require('lodash');
 const bbPromise = require('bluebird');
 const moment    = require('moment');
+const defaults  = require('../config/defaults');
 
 module.exports = function (sequelize, DataTypes) {
 
@@ -133,10 +134,21 @@ module.exports = function (sequelize, DataTypes) {
     User.createNewUser = async (params) => {
         let [addedUser, designHoursSet] = await bbPromise.all([User.create(User.getRawParams(params)), sequelize.models.DesignationHoursQuotaSet.getDefaultHoursQuotaSet({designationId: params.designationId}) ]);
         
+        let quotaParams             = {};
+
+        quotaParams.userId          = addedUser.id;
+        quotaParams.typeId          = sequelize.models.QuotaType.CONSTANTS.DEFAULT;
+        quotaParams.normalHours     = 0;
+        quotaParams.peakHours       = 0;
+        quotaParams.boardroomHours  = 0;
+        quotaParams.unStaffedHours  = 0;
+        quotaParams.expiry          = moment().format(defaults.dateTimeFormat);
+        quotaParams.addedBy         = params.addedBy;
+        quotaParams.updatedBy       = params.addedBy;
+
         if(!_.isEmpty(addedUser) && !_.isEmpty(designHoursSet)) {
             designHoursSet = _.first(designHoursSet);
 
-            let quotaParams             = {};
             quotaParams.userId          = addedUser.id;
             quotaParams.typeId          = sequelize.models.QuotaType.CONSTANTS.DEFAULT;
             quotaParams.normalHours     = designHoursSet.normalHours;
@@ -146,9 +158,9 @@ module.exports = function (sequelize, DataTypes) {
             quotaParams.expiry          = moment().add(designHoursSet.expiryMonths, 'M');
             quotaParams.addedBy         = params.addedBy;
             quotaParams.updatedBy       = params.addedBy;
-
-            await sequelize.models.UserHoursQuota.createUserQuota(quotaParams);
         }
+
+        await sequelize.models.UserHoursQuota.createUserQuota(quotaParams);
 
         return Promise.resolve(addedUser);
         
