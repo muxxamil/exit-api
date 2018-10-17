@@ -52,7 +52,7 @@ module.exports = function (sequelize, DataTypes) {
           updatedBy: {
               type: DataTypes.INTEGER(11),
               field: 'updated_by',
-              allowNull: false,
+              allowNull: true,
           },
           expiry: {
             type: DataTypes.DATE,
