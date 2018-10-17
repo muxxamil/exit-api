@@ -47,7 +47,7 @@ module.exports = function (sequelize, DataTypes) {
           addedBy: {
               type: DataTypes.INTEGER(11),
               field: 'added_by',
-              allowNull: false,
+              allowNull: true,
           },
           updatedBy: {
               type: DataTypes.INTEGER(11),
