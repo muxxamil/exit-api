@@ -126,9 +126,13 @@ UserMiddleware.editUser = async (req, res, next) => {
 UserMiddleware.resetPassword = (req, res, next) => {
     let errorMessages = [];
 
-    if(!(_.indexOf(req.user.privileges, Privilege.CONSTANTS.CAN_RESET_ALL_PASSWORD) == -1 ||
-    (req.params.id == req.user.id && _.indexOf(req.user.privileges, Privilege.CONSTANTS.CAN_RESET_MY_PASSWORD)))) {
-        errorMessages.push(req.app.locals.translation.MISSING_ATTRIBUTES.FIRST_NAME);
+    if(req.params.id != req.user.id && _.indexOf(req.user.privileges, Privilege.CONSTANTS.CAN_RESET_ALL_PASSWORD) == -1) {
+        errorMessages.push(req.app.locals.translation.PRIVILEGES.CANNOT_CHANGE_THIS_PASSWORD);
+        return res.status(400).send({ error: errorMessages });
+    }
+
+    if(req.params.id == req.user.id && _.indexOf(req.user.privileges, Privilege.CONSTANTS.CAN_RESET_MY_PASSWORD) == -1) {
+        errorMessages.push(req.app.locals.translation.PRIVILEGES.CANNOT_CHANGE_OWN_PASSWORD);
         return res.status(400).send({ error: errorMessages });
     }
 

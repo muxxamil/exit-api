@@ -50,6 +50,8 @@
     },
     "PRIVILEGES": {
         "CANNOT_CANCEL_THIS_BOOKING": "You do not have Privilege to Cancel this Booking",
-        "CANNOT_CANCEL_BOOKING_NOW": "You do not have Privilege to Cancel this Booking on this Stage"
+        "CANNOT_CANCEL_BOOKING_NOW": "You do not have Privilege to Cancel this Booking on this Stage",
+        "CANNOT_CHANGE_THIS_PASSWORD": "You do not have Privilege to Change Password of this user",
+        "CANNOT_CHANGE_OWN_PASSWORD": "You do not have Privilege to change your own Password"
     }
 }
