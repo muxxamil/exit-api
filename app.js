@@ -32,9 +32,11 @@ app.use(authenticationMiddleware.isAuthenticUser.unless(
       { url: '/users', methods: ['POST'] },
       { url: '/blogPosts', methods: ['GET'] },
       { url: '/rentalLocations', methods: ['GET'] },
+      { url: '/tags', methods: ['GET'] },
       { url: '/rentalLocations/:id/availibility', methods: ['GET'] },
       { url: '/comments/visitor', methods: ['POST'] },
-  ]}
+    ]
+  }
 ));
 
 routes(app);
