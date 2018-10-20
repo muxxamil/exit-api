@@ -34,6 +34,7 @@
     },
     "CONSTRAINTS": {
         "EMAIL_ALREADY_EXIST": "Email already exists",
+        "CANNOT_BOOK_AFTER_14_DAYS": "You cannot Schedule after 14 days, Please Contact Support for this.",
         "TIME_FROM_LESS_THAN_CURRENT": "'Time' From cannot be less than 'current Time'",
         "TIME_TO_LESS_THAN_TIME_FROM": "'Time To' cannot be less than or Equal to 'Time From'",
         "LOCATION_IS_NOT_FOR_UNSTAFFED_HOURS": "This Location cannot be booked against unStaffed Hours",

@@ -70,6 +70,11 @@ LocationBookingsMiddleware.add = async (req, res, next) => {
     try {
         let errorMessages = [];
 
+        if(moment(moment.utc(parseInt(req.body.to)).format(defaults.dateTimeFormat)).diff(moment().add('14', 'days')) > 0) {
+            errorMessages.push(req.app.locals.translation.CONSTRAINTS.CANNOT_BOOK_AFTER_14_DAYS);
+            return res.status(400).send({ error: errorMessages });
+        }
+
         if(_.isEmpty(req.body.from)) {
             errorMessages.push(req.app.locals.translation.MISSING_ATTRIBUTES.FROM);
         } else if(moment(req.body.from).diff(moment()) < 0) {
