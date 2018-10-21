@@ -55,4 +55,8 @@ config.SCHEDULE_REMINDER_EMAIL         = {
     TO: process.env.SCHEDULE_REMINDER_EMAIL_TO,
 };
 
+config.SYSTEM                           = {
+    USER_ID: -1
+}
+
 module.exports = config;

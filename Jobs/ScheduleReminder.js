@@ -5,7 +5,8 @@ const moment    = require('moment');
 const sendmail  = require('sendmail')();
 const _         = require('lodash');
 const {
-    LocationBooking
+    LocationBooking,
+    Message,
 } = require('../models');
 
 const ScheduleReminder = {};
@@ -17,32 +18,71 @@ ScheduleReminder.run = async () => {
         fromLte: moment.utc().valueOf(),
     };
 
-    let upcomingLocations = await LocationBooking.getLocationBookings(params);
-    upcomingLocations = upcomingLocations.rows;
+    let upcomingBookings = await LocationBooking.getLocationBookings(params);
+    upcomingBookings = upcomingBookings.rows;
+
+    if(_.isEmpty(upcomingBookings)) {
+        return;
+    }
+
+    const bookingIds = _.map(upcomingBookings, 'id');
+
+    let alreadyRemindedBookings = await Message.findAll({
+        where: {
+            againstId: bookingIds,
+            againstType: Message.CONSTANTS.AGAINST_TYPE.BOOKING,
+            type: Message.CONSTANTS.TYPE.EMAIL,
+            added_by: defaults.SYSTEM.USER_ID,
+        },
+        attributes: ['id', 'againstId']
+    });
+
+    alreadyRemindedBookings = _.keyBy(alreadyRemindedBookings, 'againstId');
 
     let html = "";
+    let reminderBookingArr = [];
 
-    for (let index = 0; index < upcomingLocations.length; index++) {
-        html = html.concat(`${upcomingLocations[index].RentalLocation.title}
-        <br/>
-        <br/>
-        From: ${moment(upcomingLocations[index].from).tz(defaults.TIMEZONES.AMERICA_HALIFAX).format(defaults.DATE_TIME_FORMATS.DISPLAY_DATE_TIME_FORMAT)}<br/>
-        To: ${moment(upcomingLocations[index].from).tz(defaults.TIMEZONES.AMERICA_HALIFAX).format(defaults.DATE_TIME_FORMATS.DISPLAY_DATE_TIME_FORMAT)}<br/>
-        By: ${upcomingLocations[index].User.firstName} ${upcomingLocations[index].User.lastName} (${upcomingLocations[index].User.email}, ${upcomingLocations[index].User.cell})<br/>
-        --------------------------------------------------
-        <br/>
-        <br/>`);
+    for (let index = 0; index < upcomingBookings.length; index++) {
+        if(!alreadyRemindedBookings[upcomingBookings[index].id]) {
+            let tempHtml = `${upcomingBookings[index].RentalLocation.title}
+            <br/>
+            <br/>
+            From: ${moment(upcomingBookings[index].from).tz(defaults.TIMEZONES.AMERICA_HALIFAX).format(defaults.DATE_TIME_FORMATS.DISPLAY_DATE_TIME_FORMAT)}<br/>
+            To: ${moment(upcomingBookings[index].from).tz(defaults.TIMEZONES.AMERICA_HALIFAX).format(defaults.DATE_TIME_FORMATS.DISPLAY_DATE_TIME_FORMAT)}<br/>
+            By: ${upcomingBookings[index].User.firstName} ${upcomingBookings[index].User.lastName} (${upcomingBookings[index].User.email}, ${upcomingBookings[index].User.cell})<br/>
+            --------------------------------------------------
+            <br/>
+            <br/>`;
+            html = html.concat(tempHtml);
+
+            reminderBookingArr.push({
+                type: Message.CONSTANTS.TYPE.EMAIL,
+                againstType: Message.CONSTANTS.AGAINST_TYPE.BOOKING,
+                againstId: upcomingBookings[index].id,
+                content: tempHtml,
+                addedBy: defaults.SYSTEM.USER_ID
+            });
+        }
     }
 
     console.log("\n\n html \n\n", html);
+    console.log("\n\n reminderBookingArr \n\n", reminderBookingArr);
+
+    if(_.isEmpty(html)) {
+        return;
+    }
 
     sendmail({
         from: defaults.SCHEDULE_REMINDER_EMAIL.FROM,
         to: defaults.SCHEDULE_REMINDER_EMAIL.TO,
         subject: defaults.SCHEDULE_REMINDER_EMAIL.SUBJECT,
         html: html,
-    }, function(err, reply) {
+    }, async (err, reply) => {
+        if(_.isEmpty(err)) {
+            await Message.bulkCreate(reminderBookingArr);
+        }
     });
+
 };
 
 module.exports = ScheduleReminder;
