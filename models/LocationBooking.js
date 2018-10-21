@@ -154,11 +154,13 @@ module.exports = function (sequelize, DataTypes) {
             include: [
                 {
                     model: sequelize.models.RentalLocation,
-                    attributes: ['title']
+                    attributes: ['title'],
+                    required: true
                 },
                 {
                     model: sequelize.models.User,
-                    attributes: ['firstName', 'lastName', 'cell', 'email']
+                    attributes: ['firstName', 'lastName', 'cell', 'email'],
+                    required: true
                 }
             ]
         });
