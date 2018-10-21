@@ -49,7 +49,7 @@ ScheduleReminder.run = async () => {
             <br/>
             From: ${moment(upcomingBookings[index].from).tz(defaults.TIMEZONES.AMERICA_HALIFAX).format(defaults.DATE_TIME_FORMATS.DISPLAY_DATE_TIME_FORMAT)}<br/>
             To: ${moment(upcomingBookings[index].from).tz(defaults.TIMEZONES.AMERICA_HALIFAX).format(defaults.DATE_TIME_FORMATS.DISPLAY_DATE_TIME_FORMAT)}<br/>
-            By: ${upcomingBookings[index].User.firstName} ${upcomingBookings[index].User.lastName} (${upcomingBookings[index].User.email}, ${upcomingBookings[index].User.cell})<br/>
+            By: ${upcomingBookings[index].User.firstName} ${(upcomingBookings[index].User.lastName) ? upcomingBookings[index].User.lastName : ''} (${upcomingBookings[index].User.email}, ${upcomingBookings[index].User.cell})<br/>
             --------------------------------------------------
             <br/>
             <br/>`;
