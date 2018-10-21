@@ -23,7 +23,7 @@ ScheduleReminder.run = async () => {
     let html = "";
 
     for (let index = 0; index < upcomingLocations.length; index++) {
-        html += `${upcomingLocations[index].RentalLocation.title}
+        html = html.concat(`${upcomingLocations[index].RentalLocation.title}
         <br/>
         <br/>
         From: ${moment(upcomingLocations[index].from).tz(defaults.TIMEZONES.AMERICA_HALIFAX).format(defaults.DATE_TIME_FORMATS.DISPLAY_DATE_TIME_FORMAT)}<br/>
@@ -31,8 +31,10 @@ ScheduleReminder.run = async () => {
         By: ${upcomingLocations[index].User.firstName} ${upcomingLocations[index].User.lastName} (${upcomingLocations[index].User.email}, ${upcomingLocations[index].User.cell})<br/>
         --------------------------------------------------
         <br/>
-        <br/>`;
+        <br/>`);
     }
+
+    console.log("\n\n html \n\n", html);
 
     sendmail({
         from: defaults.SCHEDULE_REMINDER_EMAIL.FROM,
