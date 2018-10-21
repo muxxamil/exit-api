@@ -126,9 +126,6 @@ module.exports = function (sequelize, DataTypes) {
                 let tempObj     = {};
                 tempObj.id      = data[index].id;
                 tempObj.title   = data[index].RentalLocation.title;
-                // tempObj.start   = moment(data[index].from).format(defaults.dateFormat);
-                // tempObj.from    = moment(data[index].from).format(defaults.amPmTimeFormat);
-                // tempObj.to      = moment(data[index].to).format(defaults.amPmTimeFormat);
                 tempObj.from    = data[index].from;
                 tempObj.to      = data[index].to;
                 let userCell = (!_.isEmpty(data[index].User.cell)) ? data[index].User.cell : "-"
@@ -140,6 +137,16 @@ module.exports = function (sequelize, DataTypes) {
     }
     LocationBooking.getLocationBookings = (params) => {
         let whereClause = LocationBooking.getRawParams(params);
+        if(params.fromGte && params.fromLte) {
+            whereClause[Op.and] = [
+                {
+                    from: { [Op.gte]: params.fromGte }
+                },
+                {
+                    from: { [Op.lte]: params.fromLte }
+                }
+            ]
+        }
         whereClause.deleted = defaults.FLAG.NO;
         return LocationBooking.findAndCountAll({
             where: whereClause,
@@ -151,7 +158,7 @@ module.exports = function (sequelize, DataTypes) {
                 },
                 {
                     model: sequelize.models.User,
-                    attributes: ['firstName', 'cell']
+                    attributes: ['firstName', 'lastName', 'cell', 'email']
                 }
             ]
         });

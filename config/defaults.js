@@ -20,6 +20,14 @@ config.page                     = 0;
 config.sortOrder                = {DESC : 'DESC', ASC : 'ASC'};
 config.tokenDuration            = '10h';
 
+config.DATE_TIME_FORMATS         = {
+    DISPLAY_DATE_TIME_FORMAT: 'DD-MM-YYYY hh:mm:ss A',
+};
+
+config.TIMEZONES         = {
+    AMERICA_HALIFAX: 'America/Halifax',
+};
+
 config.CANCEL_BOOKING_LIMIT_HOURS = 16; 
 config.FLAG                     = {
     YES: true,
@@ -38,6 +46,12 @@ config.HOURS_QUOTA_TITLE              = {
     PEAK_HOURS: 'Peak Hours',
     BOARDROOM_HOURS: 'Boardroom Hours',
     UN_STAFFED_HOURS: 'UnStaffed Hours',
+};
+
+config.SCHEDULE_REMINDER_EMAIL         = {
+    SUBJECT: 'Schedule Reminder',
+    FROM: process.env.EMAIL_FROM,
+    TO: process.env.SCHEDULE_REMINDER_EMAIL_TO,
 };
 
 module.exports = config;
