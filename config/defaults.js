@@ -1,3 +1,4 @@
+var dotenv            = require('dotenv').config();
 
 /*
  * This file contains all the constants to be used in the entire application.
