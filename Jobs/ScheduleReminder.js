@@ -14,8 +14,8 @@ const ScheduleReminder = {};
 ScheduleReminder.run = async () => {
     
     const params = {
-        fromGte: moment.utc().subtract(25, 'hours').valueOf(),
-        fromLte: moment.utc().valueOf(),
+        fromGte: moment.utc().valueOf(),
+        fromLte: moment.utc().add(25, 'hours').valueOf(),
     };
 
     let upcomingBookings = await LocationBooking.getLocationBookings(params);
