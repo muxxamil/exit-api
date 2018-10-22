@@ -1,9 +1,9 @@
 'use strict';
 
-const defaults  = require('../config/defaults');
-const moment    = require('moment');
-const sendmail  = require('sendmail')();
-const _         = require('lodash');
+const defaults   = require('../config/defaults');
+const moment     = require('moment');
+const nodemailer = require('nodemailer');
+const _          = require('lodash');
 const {
     LocationBooking,
     Message,
@@ -72,15 +72,25 @@ ScheduleReminder.run = async () => {
         return;
     }
 
-    sendmail({
-        from: defaults.EMAIL_IDS.SENDER,
+    let transporter = nodemailer.createTransport(defaults.SMTP_CONFIG);
+
+    let mailOptions = {
+        from: defaults.SCHEDULE_REMINDER_EMAIL.FROM,
         to: defaults.EMAIL_IDS.DEVELOPER,
         subject: defaults.SCHEDULE_REMINDER_EMAIL.SUBJECT,
-        html: html,
-    }, async (err, reply) => {
-        if(_.isEmpty(err)) {
+        html: html
+    };
+
+    transporter.sendMail(mailOptions, async (error, info) => {
+        if(_.isEmpty(error)) {
             await Message.bulkCreate(reminderBookingArr);
         }
+        console.log('Message sent: %s', info.messageId);
+        // Preview only available when sending through an Ethereal account
+        console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
+
+        // Message sent: <b658f8ca-6296-ccf4-8306-87d57a0b4321@example.com>
+        // Preview URL: https://ethereal.email/message/WaQKMgKddxQDoou...
     });
 
 };

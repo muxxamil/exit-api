@@ -50,7 +50,8 @@ config.HOURS_QUOTA_TITLE              = {
 };
 
 config.SCHEDULE_REMINDER_EMAIL         = {
-    SUBJECT: 'Schedule Reminder'
+    SUBJECT: 'Schedule Reminder',
+    FROM: `Scheduler Software <${process.env.EMAIL_FROM}>`,
 };
 
 config.EMAIL_IDS                        = {
@@ -62,5 +63,15 @@ config.EMAIL_IDS                        = {
 config.SYSTEM                           = {
     USER_ID: -1
 }
+
+config.SMTP_CONFIG                      = {
+    host: 'smtp.1and1.com',
+    port: 587,
+    secure: false, // upgrade later with STARTTLS
+    auth: {
+        user: 'muzamil@techstormsolutions.com',
+        pass: 'shani4805530'
+    }
+};
 
 module.exports = config;

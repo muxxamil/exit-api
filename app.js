@@ -9,19 +9,6 @@ var i18n                      = require("i18n-express");
 let responseHandler           = require('./helpers/ResponseHandler');
 let logger                    = require('./helpers/Logger');
 const scheduleReminder        = require('./Jobs/ScheduleReminder');
-const sendmail = require('sendmail')({
-  logger: {
-    debug: console.log,
-    info: console.info,
-    warn: console.warn,
-    error: console.error
-  },
-  silent: false,
-  devPort: 1025, // Default: False
-  devHost: 'localhost', // Default: localhost
-  smtpPort: 2525, // Default: 25
-  smtpHost: 'localhost' // Default: -1 - extra smtp host after resolveMX
-})
 var app = express();
 
 // view engine setup
@@ -54,7 +41,7 @@ app.use(authenticationMiddleware.isAuthenticUser.unless(
 
 var schedule = require('node-schedule');
 
-schedule.scheduleJob('00 * * * *', () => {
+schedule.scheduleJob('36 * * * *', () => {
   scheduleReminder.run();
 });
 
