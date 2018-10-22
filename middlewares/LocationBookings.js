@@ -70,7 +70,8 @@ LocationBookingsMiddleware.add = async (req, res, next) => {
     try {
         let errorMessages = [];
 
-        if(moment(moment.utc(parseInt(req.body.to)).format(defaults.dateTimeFormat)).diff(moment().add('14', 'days')) > 0) {
+        if(moment(moment.utc(parseInt(req.body.to)).format(defaults.dateTimeFormat)).diff(moment().add('14', 'days')) > 0
+        && _.indexOf(req.user.privileges, Privilege.CONSTANTS.CAN_BOOK_LOCATION_ANYTIME) == -1) {
             errorMessages.push(req.app.locals.translation.CONSTRAINTS.CANNOT_BOOK_AFTER_14_DAYS);
             return res.status(400).send({ error: errorMessages });
         }

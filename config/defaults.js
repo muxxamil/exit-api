@@ -50,10 +50,14 @@ config.HOURS_QUOTA_TITLE              = {
 };
 
 config.SCHEDULE_REMINDER_EMAIL         = {
-    SUBJECT: 'Schedule Reminder',
-    FROM: process.env.EMAIL_FROM,
-    TO: process.env.SCHEDULE_REMINDER_EMAIL_TO,
+    SUBJECT: 'Schedule Reminder'
 };
+
+config.EMAIL_IDS                        = {
+    SENDER: process.env.EMAIL_FROM,
+    RECEPTIONIST: process.env.RECEPTIONIST_EMAIL,
+    DEVELOPER: process.env.DEVELOPER_EMAIL,
+}
 
 config.SYSTEM                           = {
     USER_ID: -1
