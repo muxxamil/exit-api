@@ -74,7 +74,7 @@ ScheduleReminder.run = async () => {
 
     sendmail({
         from: defaults.EMAIL_IDS.SENDER,
-        to: `${defaults.EMAIL_IDS.RECEPTIONIST}, ${defaults.EMAIL_IDS.DEVELOPER}`,
+        to: defaults.EMAIL_IDS.RECEPTIONIST,
         subject: defaults.SCHEDULE_REMINDER_EMAIL.SUBJECT,
         html: html,
     }, async (err, reply) => {
