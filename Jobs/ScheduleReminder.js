@@ -76,7 +76,7 @@ ScheduleReminder.run = async () => {
 
     let mailOptions = {
         from: defaults.SCHEDULE_REMINDER_EMAIL.FROM,
-        to: defaults.EMAIL_IDS.DEVELOPER,
+        to: defaults.EMAIL_IDS.RECEPTIONIST,
         subject: defaults.SCHEDULE_REMINDER_EMAIL.SUBJECT,
         html: html
     };
