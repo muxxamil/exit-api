@@ -67,9 +67,6 @@ ScheduleReminder.run = async () => {
             }
         }
     
-        console.log("\n\n html \n\n", html);
-        console.log("\n\n reminderBookingArr \n\n", reminderBookingArr);
-    
         if(_.isEmpty(html)) {
             return;
         }
