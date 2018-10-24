@@ -69,8 +69,8 @@ config.SMTP_CONFIG                      = {
     port: 587,
     secure: false, // upgrade later with STARTTLS
     auth: {
-        user: 'muzamil@techstormsolutions.com',
-        pass: 'shani4805530'
+        user: 'schedule@curwinbusinesscentre.com',
+        pass: 'ShaniTara2018!'
     }
 };
 
