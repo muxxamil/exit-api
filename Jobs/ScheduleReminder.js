@@ -84,6 +84,7 @@ ScheduleReminder.run = async () => {
         };
     
         transporter.sendMail(mailOptions, async (error, info) => {
+            console.log("errorrrrrrrrrr", error);
             if(_.isEmpty(error)) {
                 await Message.bulkCreate(reminderBookingArr);
                 console.log('Message sent: %s', info.messageId);
