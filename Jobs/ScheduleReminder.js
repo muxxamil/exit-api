@@ -1,6 +1,7 @@
 'use strict';
 
 const defaults   = require('../config/defaults');
+const bbPromise  = require('bluebird');
 const moment     = require('moment');
 const nodemailer = require('nodemailer');
 const _          = require('lodash');
@@ -85,16 +86,15 @@ ScheduleReminder.run = async () => {
         transporter.sendMail(mailOptions, async (error, info) => {
             if(_.isEmpty(error)) {
                 await Message.bulkCreate(reminderBookingArr);
+                console.log('Message sent: %s', info.messageId);
+                // Preview only available when sending through an Ethereal account
+                console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
             }
-            console.log('Message sent: %s', info.messageId);
-            // Preview only available when sending through an Ethereal account
-            console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
-    
-            // Message sent: <b658f8ca-6296-ccf4-8306-87d57a0b4321@example.com>
-            // Preview URL: https://ethereal.email/message/WaQKMgKddxQDoou...
         });   
     } catch (error) {
-        next(error);
+        const errorObj = new Error();
+        errorObj.message = error.message;
+        return bbPromise.reject(errorObj);
     }
 
 };

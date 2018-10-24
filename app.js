@@ -41,7 +41,7 @@ app.use(authenticationMiddleware.isAuthenticUser.unless(
 
 var schedule = require('node-schedule');
 
-schedule.scheduleJob('00 * * * *', () => {
+schedule.scheduleJob('27 * * * *', () => {
   scheduleReminder.run();
 });
 
