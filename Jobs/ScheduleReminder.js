@@ -95,7 +95,7 @@ ScheduleReminder.run = async () => {
             }
         }
     
-        if(_.isEmpty(sendEmailPromiseArr)) {
+        if(!_.isEmpty(sendEmailPromiseArr)) {
             await bbPromise.all([...sendEmailPromiseArr, Message.bulkCreate(reminderBookingArr)]);
             return;
         }
