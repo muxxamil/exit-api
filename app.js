@@ -9,6 +9,7 @@ var i18n                      = require("i18n-express");
 let responseHandler           = require('./helpers/ResponseHandler');
 let logger                    = require('./helpers/Logger');
 const scheduleReminder        = require('./Jobs/ScheduleReminder');
+const weeklyHoursAdjustment   = require('./Jobs/WeeklyHoursAdjustment');
 var app = express();
 
 // view engine setup
@@ -41,7 +42,7 @@ app.use(authenticationMiddleware.isAuthenticUser.unless(
 
 var schedule = require('node-schedule');
 
-schedule.scheduleJob('00 * * * *', () => {
+schedule.scheduleJob('28 * * * *', () => {
   scheduleReminder.run();
 });
 

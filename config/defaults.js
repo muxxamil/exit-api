@@ -23,6 +23,8 @@ config.tokenDuration            = '10h';
 
 config.DATE_TIME_FORMATS         = {
     DISPLAY_DATE_TIME_FORMAT: 'DD-MM-YYYY hh:mm:ss A',
+    DISPLAY_DATE_FORMAT: 'DD-MM-YYYY',
+    DISPLAY_TIME_FORMAT: 'hh:mm:ss A',
 };
 
 config.TIMEZONES         = {
@@ -52,6 +54,11 @@ config.HOURS_QUOTA_TITLE              = {
 config.SCHEDULE_REMINDER_EMAIL         = {
     SUBJECT: 'Schedule Reminder',
     FROM: `Scheduler Software <${process.env.EMAIL_FROM}>`,
+    CONTENT: `Dear {{name}}<br/><br/>
+    This is a reminder that you have office time scheduled for {{date}} from {{startTime}} to {{endTime}} (Timezone: Halifax). If there are any special accommodations you require for your appointment, please inform us ASAP.<br/><br/>
+    You can reach us at 506-847-4485, Monday-Saturday 8am-8pm, or by email at info@curwinbusinesscentre.com<br/><br/>
+    We look forward to seeing you then!<br/><br/>
+    Curwin Business Centre`
 };
 
 config.EMAIL_IDS                        = {

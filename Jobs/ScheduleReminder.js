@@ -1,6 +1,7 @@
 'use strict';
 
 const defaults   = require('../config/defaults');
+const helper     = require('../helpers/Helper');
 const bbPromise  = require('bluebird');
 const moment     = require('moment');
 const nodemailer = require('nodemailer');
@@ -41,22 +42,49 @@ ScheduleReminder.run = async () => {
     
         alreadyRemindedBookings = _.keyBy(alreadyRemindedBookings, 'againstId');
     
-        let html = "";
         let reminderBookingArr = [];
+        let sendEmailPromiseArr = [];
+        let valuesToReplaceArr = [];
+
+        let transporter = nodemailer.createTransport(defaults.SMTP_CONFIG);
     
         for (let index = 0; index < upcomingBookings.length; index++) {
             if(!alreadyRemindedBookings[upcomingBookings[index].id]) {
-                let tempHtml = `${upcomingBookings[index].RentalLocation.title}
-                <br/>
-                <br/>
-                From: ${moment(upcomingBookings[index].from).tz(defaults.TIMEZONES.AMERICA_HALIFAX).format(defaults.DATE_TIME_FORMATS.DISPLAY_DATE_TIME_FORMAT)}<br/>
-                To: ${moment(upcomingBookings[index].to).tz(defaults.TIMEZONES.AMERICA_HALIFAX).format(defaults.DATE_TIME_FORMATS.DISPLAY_DATE_TIME_FORMAT)}<br/>
-                By: ${upcomingBookings[index].User.firstName} ${(upcomingBookings[index].User.lastName) ? upcomingBookings[index].User.lastName : ''} (${upcomingBookings[index].User.email}, ${upcomingBookings[index].User.cell})<br/>
-                --------------------------------------------------
-                <br/>
-                <br/>`;
-                html = html.concat(tempHtml);
-    
+                
+                valuesToReplaceArr = [
+                    {
+                        name: '{{name}}',
+                        value: `${upcomingBookings[index].User.firstName} ${(upcomingBookings[index].User.lastName) ? upcomingBookings[index].User.lastName : ''}`
+                    },
+                    {
+                        name: '{{date}}',
+                        value: `${moment(upcomingBookings[index].from).tz(defaults.TIMEZONES.AMERICA_HALIFAX).format(defaults.DATE_TIME_FORMATS.DISPLAY_DATE_FORMAT)}`
+                    },
+                    {
+                        name: '{{startTime}}',
+                        value: `${moment(upcomingBookings[index].from).tz(defaults.TIMEZONES.AMERICA_HALIFAX).format(defaults.DATE_TIME_FORMATS.DISPLAY_TIME_FORMAT)}`
+                    },
+                    {
+                        name: '{{endTime}}',
+                        value: `${moment(upcomingBookings[index].to).tz(defaults.TIMEZONES.AMERICA_HALIFAX).format(defaults.DATE_TIME_FORMATS.DISPLAY_TIME_FORMAT)}`
+                    }
+                ];
+
+                let tempHtml = helper.replaceStringValues(defaults.SCHEDULE_REMINDER_EMAIL.CONTENT, valuesToReplaceArr);
+
+                let mailOptions = {
+                    from: defaults.SCHEDULE_REMINDER_EMAIL.FROM,
+                    to: upcomingBookings[index].User.email,
+                    subject: defaults.SCHEDULE_REMINDER_EMAIL.SUBJECT,
+                    html: helper.replaceStringValues(defaults.SCHEDULE_REMINDER_EMAIL.CONTENT, valuesToReplaceArr)
+                };
+
+                console.log("\n\n\n");
+                console.log("mailOptions", mailOptions);
+                console.log("\n\n\n");
+
+                sendEmailPromiseArr.push(transporter.sendMail(mailOptions));
+
                 reminderBookingArr.push({
                     type: Message.CONSTANTS.TYPE.EMAIL,
                     againstType: Message.CONSTANTS.AGAINST_TYPE.BOOKING,
@@ -67,28 +95,11 @@ ScheduleReminder.run = async () => {
             }
         }
     
-        if(_.isEmpty(html)) {
+        if(_.isEmpty(sendEmailPromiseArr)) {
+            await bbPromise.all([...sendEmailPromiseArr, Message.bulkCreate(reminderBookingArr)]);
             return;
         }
-    
-        let transporter = nodemailer.createTransport(defaults.SMTP_CONFIG);
-    
-        let mailOptions = {
-            from: defaults.SCHEDULE_REMINDER_EMAIL.FROM,
-            to: defaults.EMAIL_IDS.RECEPTIONIST,
-            subject: defaults.SCHEDULE_REMINDER_EMAIL.SUBJECT,
-            html: html
-        };
-    
-        transporter.sendMail(mailOptions, async (error, info) => {
-            console.log("errorrrrrrrrrr", error);
-            if(_.isEmpty(error)) {
-                await Message.bulkCreate(reminderBookingArr);
-                console.log('Message sent: %s', info.messageId);
-                // Preview only available when sending through an Ethereal account
-                console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
-            }
-        });   
+
     } catch (error) {
         const errorObj = new Error();
         errorObj.message = error.message;
