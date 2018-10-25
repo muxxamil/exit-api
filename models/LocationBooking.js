@@ -187,6 +187,7 @@ module.exports = function (sequelize, DataTypes) {
     LocationBooking.getLocationBookingBetweenDateRanges = (params) => {
 
         params.endDate = moment.utc(parseInt(params.endDate)).subtract(1, 'seconds').valueOf();
+        params.startDate = moment.utc(parseInt(params.startDate)).add(1, 'seconds').valueOf();
         
         let whereClause = {
             [Op.or]: [
