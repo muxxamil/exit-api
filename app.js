@@ -42,13 +42,13 @@ app.use(authenticationMiddleware.isAuthenticUser.unless(
 
 var schedule = require('node-schedule');
 
-schedule.scheduleJob('08 * * * *', () => {
+schedule.scheduleJob('00 * * * *', () => {
   scheduleReminder.run();
 });
 
-// schedule.scheduleJob('08 * * * *', () => {
-//   weeklyHoursAdjustment.run();
-// });
+schedule.scheduleJob('15 * * * *', () => {
+  weeklyHoursAdjustment.run();
+});
 
 routes(app);
 

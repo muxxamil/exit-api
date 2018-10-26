@@ -82,6 +82,7 @@ module.exports = function (sequelize, DataTypes) {
     UserHoursQuota.associate = function (models) {
 
         UserHoursQuota.belongsTo(models.QuotaType, {foreignKey: 'typeId'});
+        UserHoursQuota.belongsTo(models.User, {foreignKey: 'userId'});
 
     };
 
@@ -108,7 +109,13 @@ module.exports = function (sequelize, DataTypes) {
         }
       });
       
-      let weeklyBookingPromise         = sequelize.models.RentalLocation.getBookings({from: startOfWeek, to: endOfWeek, userId: userId});
+      let weeklyBookingPromise = sequelize.models.RentalLocation.getBookings(
+        {
+          from: startOfWeek,
+          to: endOfWeek,
+          userId: userId
+        });
+
       let weeklyLimitHoursQuotaPromise = sequelize.models.DesignationHoursQuotaSet.findOne({
           where: {
               designationId: userInfo.designationId,
@@ -183,7 +190,10 @@ module.exports = function (sequelize, DataTypes) {
         formatedData.weeklyQuota.expiry          = extendedHours.expiry;
       }
 
-      return formatedData;
+      let finalResult = {};
+      finalResult[userId] = formatedData;
+
+      return finalResult;
     }
 
     UserHoursQuota.getQuota = (params) => {
