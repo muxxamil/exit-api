@@ -46,7 +46,7 @@ schedule.scheduleJob('00 * * * *', () => {
   scheduleReminder.run();
 });
 
-schedule.scheduleJob('15 * * * *', () => {
+schedule.scheduleJob('47 * * * *', () => {
   weeklyHoursAdjustment.run();
 });
 

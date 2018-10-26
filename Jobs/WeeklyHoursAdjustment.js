@@ -55,7 +55,9 @@ weeklyHoursAdjustment.run = async () => {
 
             let defaultHoursQuota = _.first(_.filter(userHoursQuotaRes[currentUserId], {'typeId': QuotaType.CONSTANTS.DEFAULT}));
             let extendedHoursQuota = _.first(_.filter(userHoursQuotaRes[currentUserId], {'typeId': QuotaType.CONSTANTS.EXTENSION}));
-
+console.log("\n\n weeklyHours \n\n", JSON.stringify(weeklyHours));
+console.log("\n\n defaultHoursQuota \n\n", JSON.stringify(defaultHoursQuota));
+console.log("\n\n extendedHoursQuota \n\n", JSON.stringify(extendedHoursQuota));
             let tempObj = {};
 
             if(!_.isEmpty(extendedHoursQuota)) {
