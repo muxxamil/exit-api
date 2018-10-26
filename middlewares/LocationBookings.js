@@ -101,13 +101,11 @@ LocationBookingsMiddleware.add = async (req, res, next) => {
             errorMessages.push(req.app.locals.translation.CONSTRAINTS.TIME_TO_LESS_THAN_TIME_FROM);
         }
 
-        let userInfo = {id: req.user.id, designationId: req.user.designationId};
+        let targetUserId = (req.body.bookingFor) ? req.body.bookingFor : req.user.id;
 
-        if(req.body.bookingFor) {
-            let userDataAndCountPromises = User.getUsers({id: req.body.bookingFor});
-            let userRes = await userDataAndCountPromises.dataPromise;
-            userInfo = _.first(userRes);
-        }
+        let userDataAndCountPromises = User.getUsers({id: targetUserId});
+        let userRes = await userDataAndCountPromises.dataPromise;
+        let userInfo = _.first(userRes);
         
         if(_.isEmpty(errorMessages)) {
             let rentalLocationPromise = RentalLocation.getDetailedRentalLocation(req.params.id);
