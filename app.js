@@ -46,6 +46,10 @@ schedule.scheduleJob('08 * * * *', () => {
   scheduleReminder.run();
 });
 
+// schedule.scheduleJob('08 * * * *', () => {
+//   weeklyHoursAdjustment.run();
+// });
+
 routes(app);
 
 // Catch error from all over the application here & pass to response middleware.

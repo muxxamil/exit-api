@@ -33,7 +33,7 @@ router.get('/:userId/quota', async (req, res, next) => {
     try {
         req.query.userId = req.params.userId;
         let userHoursQuotaRes = await UserHoursQuota.getQuota(req.query);
-        userHoursQuotaRes.rows = await UserHoursQuota.formatWeeklyAndMonthlyQuota(userHoursQuotaRes.rows, req.user);
+        userHoursQuotaRes.rows = await UserHoursQuota.formatWeeklyAndMonthlyQuota(userHoursQuotaRes.rows, req.params.userId);
         res.send(200, JSON.stringify(userHoursQuotaRes));
     } catch (err) {
         next(err);

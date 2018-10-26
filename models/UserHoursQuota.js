@@ -85,7 +85,7 @@ module.exports = function (sequelize, DataTypes) {
 
     };
 
-    UserHoursQuota.formatWeeklyAndMonthlyQuota = async (data, userInfo) => {
+    UserHoursQuota.formatWeeklyAndMonthlyQuota = async (data, userId) => {
       let formatedData  = {
           monthlyQuota: {
             normalHours: 0,
@@ -100,8 +100,15 @@ module.exports = function (sequelize, DataTypes) {
       };
       let startOfWeek   = moment.utc().startOf("week").add(1, 'days').utc().valueOf();
       let endOfWeek     = moment.utc().endOf("week").add(1, 'days').utc().valueOf();
+
+      let userInfo = await sequelize.models.User.findOne({
+        attributes: ['id', 'designationId'],
+        where: {
+          id: userId
+        }
+      });
       
-      let weeklyBookingPromise         = sequelize.models.RentalLocation.getBookings({from: startOfWeek, to: endOfWeek, userId: userInfo.id});
+      let weeklyBookingPromise         = sequelize.models.RentalLocation.getBookings({from: startOfWeek, to: endOfWeek, userId: userId});
       let weeklyLimitHoursQuotaPromise = sequelize.models.DesignationHoursQuotaSet.findOne({
           where: {
               designationId: userInfo.designationId,
