@@ -90,10 +90,9 @@ LocationBookingsMiddleware.add = async (req, res, next) => {
             errorMessages.push(req.app.locals.translation.MISSING_ATTRIBUTES.BOOKING_FOR_DATE);
         }
 
-        if(req.params.id == RentalLocation.CONSTANTS.LOCATIONS.MARGRET_OFFICE && 
-            _.indexOf(req.user.privileges, RentalLocation.CONSTANTS[req.params.id]) == -1) {
-                errorMessages.push(req.app.locals.translation.CONSTRAINTS.CANNOT_BOOK_THIS_OFFICE); 
-                return res.status(400).send({ error: errorMessages });
+        if(_.indexOf(req.user.privileges, RentalLocation.CONSTANTS[req.params.id]) == -1) {
+            errorMessages.push(req.app.locals.translation.CONSTRAINTS.CANNOT_BOOK_THIS_OFFICE); 
+            return res.status(400).send({ error: errorMessages });
         }
 
         if(!_.isEmpty(req.body.from) && !_.isEmpty(req.body.to) &&
