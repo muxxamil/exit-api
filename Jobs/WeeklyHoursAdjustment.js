@@ -68,12 +68,10 @@ console.log("\n\n extendedHoursQuota \n\n", JSON.stringify(extendedHoursQuota));
 
             defaultHoursQuota.normalHours = (defaultHoursQuota.normalHours > weeklyHours.normalHours) ? defaultHoursQuota.normalHours - weeklyHours.normalHours : 0;
             defaultHoursQuota.boardroomHours = (defaultHoursQuota.boardroomHours > weeklyHours.boardroomHours) ? defaultHoursQuota.boardroomHours - weeklyHours.boardroomHours : 0;
-            defaultHoursQuota.unStaffedHours = (defaultHoursQuota.unStaffedHours > weeklyHours.unStaffedHours) ? defaultHoursQuota.unStaffedHours - weeklyHours.unStaffedHours : 0;
             
             updateQuotaPromiseArr.push(UserHoursQuota.update({
                 normalHours: defaultHoursQuota.normalHours,
                 boardroomHours: defaultHoursQuota.boardroomHours,
-                unStaffedHours: defaultHoursQuota.unStaffedHours,
             }, {where: {id: defaultHoursQuota.id}}));
         });
 
