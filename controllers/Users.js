@@ -5,7 +5,8 @@ const _              = require('lodash');
 const bbPromise      = require('bluebird');
 const md5            = require('md5');
 const userMiddleware = require('../middlewares/Users');
-
+const helper         = require('../helpers/Helper');
+const defaults       = require('../config/defaults');
 
 const {
     User,
@@ -75,6 +76,21 @@ router.put('/:id/resetPassword', userMiddleware.resetPassword, async (req, res, 
 router.post('/', userMiddleware.addUser, async (req, res, next) => {
     try {
         let usersRes = await User.createNewUser(User.getRawParams(req.body));
+
+        let emailParams = {
+            subject: defaults.WELCOME_EMAIL.SUBJECT,
+            emailContent: defaults.WELCOME_EMAIL.CONTENT,
+            from: defaults.WELCOME_EMAIL.FROM,
+            to: usersRes.email,
+        }
+
+        emailParams.valuesToReplaceArr = [
+            {
+                name: '{{name}}',
+                value: `${usersRes.firstName} ${(usersRes.lastName) ? usersRes.lastName : ''}`
+            }
+        ];
+        await helper.sendEmail(emailParams);
         res.send(200, JSON.stringify(usersRes));
     } catch (err) {
         next(err);

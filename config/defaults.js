@@ -61,6 +61,17 @@ config.SCHEDULE_REMINDER_EMAIL         = {
     Curwin Business Centre`
 };
 
+config.WELCOME_EMAIL                    = {
+    SUBJECT: 'Thank You For Signing Up!',
+    FROM: `Scheduler Software <${process.env.EMAIL_FROM}>`,
+    CONTENT: `Hi {{name}}<br/><br/>
+    We are incredibly excited to have you join the Curwin Business Centre!<br/><br/>
+    Now, before we can get started on all of the great services we have to offer, could you please call or email our head office so we can help you to set up your account?<br/><br/>
+    Our office number is 506-847-4485<br/>
+    Email: emily@curwinbusinesscentre.com<br/><br/>
+    We look forward to hearing from you soon!`
+};
+
 config.EMAIL_IDS                        = {
     SENDER: process.env.EMAIL_FROM,
     RECEPTIONIST: process.env.RECEPTIONIST_EMAIL,
