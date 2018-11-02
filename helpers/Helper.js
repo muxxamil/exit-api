@@ -20,7 +20,7 @@ helperService.replaceStringValues = (content, values) => {
 };
 
 helperService.sendEmail = (configuration) => {
-    let transporter = nodemailer.createTransport(defaults.SMTP_CONFIG, {from: configuration.from});
+    let transporter = nodemailer.createTransport(defaults.SMTP_CONFIG);
     let mailOptions = {
         from: configuration.from,
         to: configuration.to,

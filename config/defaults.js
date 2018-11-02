@@ -83,13 +83,20 @@ config.SYSTEM                           = {
 }
 
 config.SMTP_CONFIG                      = {
-    host: 'smtp.1and1.com',
-    port: 587,
-    secure: false, // upgrade later with STARTTLS
+    service: 'gmail',
     auth: {
-        user: 'schedule@curwinbusinesscentre.com',
-        pass: 'ShaniTara2018!'
-    }
-};
+           user: 'curwinscheduler@gmail.com',
+           pass: 'ShaniTara2018!'
+       }
+   }
+// config.SMTP_CONFIG                      = {
+//     host: 'smtp.1and1.com',
+//     port: 587,
+//     secure: false, // upgrade later with STARTTLS
+//     auth: {
+//         user: 'schedule@curwinbusinesscentre.com',
+//         pass: 'ShaniTara2018!'
+//     }
+// };
 
 module.exports = config;
