@@ -85,7 +85,7 @@ config.SYSTEM                           = {
 config.SMTP_CONFIG                      = {
     host: 'smtp.1and1.com',
     port: 587,
-    secure: true, // upgrade later with STARTTLS
+    secure: false, // upgrade later with STARTTLS
     auth: {
         user: 'schedule@curwinbusinesscentre.com',
         pass: 'ShaniTara2018!'
