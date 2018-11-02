@@ -46,7 +46,7 @@ ScheduleReminder.run = async () => {
         let sendEmailPromiseArr = [];
         let valuesToReplaceArr = [];
 
-        let transporter = nodemailer.createTransport(defaults.SMTP_CONFIG);
+        let transporter = nodemailer.createTransport(defaults.SMTP_CONFIG, {from: configuration.from});
     
         for (let index = 0; index < upcomingBookings.length; index++) {
             if(!alreadyRemindedBookings[upcomingBookings[index].id]) {
