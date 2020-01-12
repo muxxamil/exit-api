@@ -1,7 +1,7 @@
 'use strict';
 const defaults   = require('../config/defaults');
 const nodemailer = require('nodemailer');
-
+const _ = require('lodash');
 
 let helperService = {};
 
@@ -29,6 +29,10 @@ helperService.sendEmail = (configuration) => {
     };
 
     return transporter.sendMail(mailOptions);
+};
+
+helperService.cleanArray = (arrayOfObjects) => {
+    return _.map(arrayOfObjects, (obj) => obj.toJSON());
 };
 
 module.exports = helperService;

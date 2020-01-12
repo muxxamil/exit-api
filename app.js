@@ -8,8 +8,7 @@ let authenticationMiddleware  = require('./middlewares/Authentication');
 var i18n                      = require("i18n-express");
 let responseHandler           = require('./helpers/ResponseHandler');
 let logger                    = require('./helpers/Logger');
-const scheduleReminder        = require('./Jobs/ScheduleReminder');
-const weeklyHoursAdjustment   = require('./Jobs/WeeklyHoursAdjustment');
+// const weeklyHoursAdjustment   = require('./Jobs/WeeklyHoursAdjustment');
 var app = express();
 
 // view engine setup
@@ -26,12 +25,13 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-
 app.use(authenticationMiddleware.isAuthenticUser.unless(
   { path: [
       { url: '/authentication/login', methods: ['POST'] },
       { url: '/users', methods: ['POST'] },
       { url: '/blogPosts', methods: ['GET'] },
+      { url: '/blogPosts/categories/count', methods: ['GET'] },
+      { url: '/blogPosts/recent', methods: ['GET'] },
       { url: '/rentalLocations', methods: ['GET'] },
       { url: '/tags', methods: ['GET'] },
       { url: '/rentalLocations/:id/availibility', methods: ['GET'] },
@@ -40,15 +40,11 @@ app.use(authenticationMiddleware.isAuthenticUser.unless(
   }
 ));
 
-var schedule = require('node-schedule');
+// var schedule = require('node-schedule');
 
-schedule.scheduleJob('00 * * * *', () => {
-  scheduleReminder.run();
-});
-
-schedule.scheduleJob('59 55 23 * * 0', () => {
-  weeklyHoursAdjustment.run();
-});
+// schedule.scheduleJob('59 55 23 * * 0', () => {
+//   weeklyHoursAdjustment.run();
+// });
 
 routes(app);
 

@@ -6,7 +6,7 @@ var dotenv            = require('dotenv').config();
 
 const config = {};
 
-config.jwtSecret                = 'curwinBusinessAdmin';
+config.jwtSecret                = 'exit-admin-api';
 config.dateTimeFormat           = 'YYYY-MM-DD HH:mm:ss';
 config.dateFormat               = 'YYYY-MM-DD';
 config.timeFormat               = 'HH:mm:ss';

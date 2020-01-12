@@ -2,6 +2,7 @@
 const _             = require('lodash');
 const bbPromise     = require('bluebird');
 const defaults      = require('../config/defaults');
+const helper         = require('../helpers/Helper');
 const sequelize     = require('sequelize');
 const Op            = sequelize.Op;
 
@@ -22,6 +23,11 @@ module.exports = function (sequelize, DataTypes) {
         title: {
             type: DataTypes.STRING(1000),
             allowNull: false,
+        },
+        catId: {
+            type: DataTypes.INTEGER(11),
+            allowNull: false,
+            field: 'cat_id'
         },
         preDetail: {
             type: DataTypes.TEXT,
@@ -242,6 +248,32 @@ module.exports = function (sequelize, DataTypes) {
         bbPromise.all(extraBlogPostEnteriesPromises);
 
         return createBlogPostResult;
+    }
+
+    BlogPost.getBlogPostsCategoriesCounts = async () => {
+        const [categories, blogPostCategoriesCount] = await bbPromise.all([sequelize.models.BlogCategory.findAll({
+            attributes: ['id', 'title'],
+            where: {
+                active: defaults.FLAG.YES
+            }
+        }),
+        BlogPost.findAll({
+            attributes: ['catId', [sequelize.fn('COUNT', 'BlogPost.id'), 'count']],
+            where: {
+                active: defaults.FLAG.YES
+            },
+            group: ['catId']
+        })
+        ]);
+
+        const categoryWiseCount = _.keyBy(helper.cleanArray(blogPostCategoriesCount), 'catId');
+
+        return _.map(categories, (catObj) => {
+            return {
+                ...(catObj.toJSON()),
+                count: _.get(categoryWiseCount, `${catObj.id}.count`, 0)
+            }
+        });
     }
         
 

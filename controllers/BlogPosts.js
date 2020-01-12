@@ -20,6 +20,14 @@ router.get('/', async (req, res, next) => {
     }
 });
 
+router.get('/categories/count', async (req, res, next) => {
+    try {
+        res.status(200).send(await BlogPost.getBlogPostsCategoriesCounts());
+    } catch (err) {
+        next(err);
+    }
+});
+
 router.post('/', blogPostMiddleware.addPost, async (req, res, next) => {
     try {
         let createBlogPostResult = await BlogPost.createBlogPost(req.body);
@@ -43,6 +51,17 @@ router.delete('/', async (req, res, next) => {
         });
 
         res.send(200, deleteBlogPosts);
+    } catch (err) {
+        next(err);
+    }
+});
+
+router.get('/recent', async (req, res, next) => {
+    try {
+        const params = {pageLimit: 5};
+        let blogDataAndCountPromises = BlogPost.getBlogPosts(params);
+        let [data, count] = await bbPromise.all([blogDataAndCountPromises.dataPromise, blogDataAndCountPromises.countPromise]);
+        res.send(200, data);
     } catch (err) {
         next(err);
     }
