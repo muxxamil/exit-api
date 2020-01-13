@@ -48,7 +48,7 @@ module.exports = function (sequelize, DataTypes) {
         designationId: {
             type: DataTypes.INTEGER(11),
             field: 'designation_id',
-            allowNull: false,
+            allowNull: true,
         },
         active: {
             type: DataTypes.BOOLEAN,
@@ -80,84 +80,29 @@ module.exports = function (sequelize, DataTypes) {
 
     };
 
-    // User.getUsers = (params) => {
+    User.getUsers = (params) => {
 
-    //     let options = {};
-    //     // options = User.setPagination(params);
-    //     options.where = User.getRawParams(params);
-    //     options.subQuery = false;
-    //     let countPromise = User.find({
-    //         attributes: [ [ sequelize.literal('count(*)'), 'count' ] ],
-    //         subQuery: false,
-    //         raw: true,
-    //         where: _.clone(options.where)
-    //     });
-    //     options.include = [
-    //         {
-    //             model : sequelize.models.UserDesignation,
-    //             attributes: ['title'],
-    //             include: [
-    //                 {
-    //                     model: sequelize.models.UserPrivilege,
-    //                     attributes: ['privilegeId'],
-    //                     required: true,
-    //                     include: [
-    //                         {
-    //                             model: sequelize.models.Privilege,
-    //                             attributes: ['key'],
-    //                             required: true,
-    //                         }
-    //                     ]
-    //                 }
-    //             ],
-    //             required: true
-    //         },
-    //         {
-    //             model : sequelize.models.UserHoursQuota,
-    //             attributes: ['expiry'],
-    //             required: false,
-    //             where: {
-    //                 typeId: sequelize.models.QuotaType.CONSTANTS.DEFAULT
-    //             }
-    //         }
-    //     ];
-    //     let dataPromise = User.findAll(options);
-    //     return {
-    //         dataPromise: dataPromise,
-    //         countPromise: countPromise
-    //     }
-    // }
+        let options = {};
+        // options = User.setPagination(params);
+        options.where = User.getRawParams(params);
+        options.subQuery = false;
+        let countPromise = User.find({
+            attributes: [ [ sequelize.literal('count(*)'), 'count' ] ],
+            subQuery: false,
+            raw: true,
+            where: _.clone(options.where)
+        });
+        options.order = [['id', defaults.sortOrder.DESC]];
+        let dataPromise = User.findAll(options);
+        return {
+            dataPromise: dataPromise,
+            countPromise: countPromise
+        }
+    }
 
-    // User.createNewUser = async (params) => {
-    //     let [addedUser, designHoursSet] = await bbPromise.all([User.create(User.getRawParams(params)), sequelize.models.DesignationHoursQuotaSet.getDefaultHoursQuotaSet({designationId: params.designationId}) ]);
-        
-    //     let quotaParams             = {};
-
-    //     quotaParams.userId          = addedUser.id;
-    //     quotaParams.typeId          = sequelize.models.QuotaType.CONSTANTS.DEFAULT;
-    //     quotaParams.normalHours     = 0;
-    //     quotaParams.peakHours       = 0;
-    //     quotaParams.boardroomHours  = 0;
-    //     quotaParams.unStaffedHours  = 0;
-    //     quotaParams.expiry          = moment().format(defaults.dateTimeFormat);
-    //     quotaParams.addedBy         = params.updatedBy;
-    //     quotaParams.updatedBy       = params.updatedBy;
-
-    //     if(!_.isEmpty(addedUser) && !_.isEmpty(designHoursSet)) {
-    //         designHoursSet = _.first(designHoursSet);
-
-    //         quotaParams.normalHours     = designHoursSet.normalHours;
-    //         quotaParams.peakHours       = designHoursSet.peakHours;
-    //         quotaParams.boardroomHours  = designHoursSet.boardroomHours;
-    //         quotaParams.unStaffedHours  = designHoursSet.unStaffedHours;
-    //         quotaParams.expiry          = moment().add(designHoursSet.expiryMonths, 'M');
-    //     }
-
-    //     await sequelize.models.UserHoursQuota.createUserQuota(quotaParams);
-
-    //     return Promise.resolve(addedUser);
-        
-    // }
+    User.createNewUser = async (params) => {
+        return User.create(User.getRawParams(params));
+    }
     // User.insertIgnoreUser = async (params) => {
 
     //     let userResult = await User.getUsers({email: params.email});

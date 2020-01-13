@@ -141,42 +141,6 @@ module.exports = function (sequelize, DataTypes) {
     BlogPost.appendIncludeStatements = (options, params, onlyMandatory = false) => {
         if(!onlyMandatory) {
             options.push({
-                model : sequelize.models.Comment,
-                attributes: { exclude: ['active', 'againstType', 'status'] },
-                where: {
-                    active: sequelize.models.Comment.CONSTANTS.ACTIVE.YES,
-                    againstType: sequelize.models.Comment.CONSTANTS.AGAINST_TYPE.BLOG,
-                    status: sequelize.models.Comment.CONSTANTS.STATUS.APPROVED
-                },
-                required: false,
-                include: [
-                    {
-                        model : sequelize.models.Comment,
-                        as: 'CommentsAgainstComment',
-                        attributes: { exclude: ['active', 'againstType', 'status'] },
-                        include: [
-                            {
-                                model : sequelize.models.User,
-                                as: 'AddedBy',
-                                attributes: ['firstName'],
-                                required: false,
-                            }
-                        ],
-                        required: false,
-                        where: {
-                            active: sequelize.models.Comment.CONSTANTS.ACTIVE.YES,
-                            status: sequelize.models.Comment.CONSTANTS.STATUS.APPROVED
-                        },
-                    },
-                    {
-                        model : sequelize.models.User,
-                        as: 'AddedBy',
-                        attributes: ['firstName'],
-                        required: false,
-                    }
-                ]
-            });
-            options.push({
                 model : sequelize.models.Attachment,
                 attributes: { exclude: ['against_type', 'type', 'active', 'updatedBy', 'updatedAt'] },
                 where: {
@@ -185,36 +149,6 @@ module.exports = function (sequelize, DataTypes) {
                     type: sequelize.models.Attachment.CONSTANTS.TYPE.IMAGE
                 },
                 required: false
-            });
-            options.push({
-                model : sequelize.models.BlogPostLike,
-                attributes: ['id'],
-            });
-        }
-        let TagsBlogPostsMappingWhereClause = {
-            active: sequelize.models.TagsBlogPostsMapping.CONSTANTS.ACTIVE.YES
-        };
-        let TagsBlogPostsMappingRequired = false;
-        if(params.tagIds) {
-            TagsBlogPostsMappingRequired = true;
-            TagsBlogPostsMappingWhereClause.tagId = params.tagIds.split(',');
-        }
-
-        if(onlyMandatory == TagsBlogPostsMappingRequired) {
-            options.push({
-                model : sequelize.models.TagsBlogPostsMapping,
-                attributes: ['tagId'],
-                required: TagsBlogPostsMappingRequired,
-                where: TagsBlogPostsMappingWhereClause,
-                include: [
-                    {
-                        model : sequelize.models.Tag,
-                        attributes: ['title'],
-                        where: {
-                            active: sequelize.models.Tag.CONSTANTS.ACTIVE.YES
-                        },
-                    }
-                ]
             });
         }
     }

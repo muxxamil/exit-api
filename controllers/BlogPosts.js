@@ -7,6 +7,7 @@ const blogPostMiddleware = require('../middlewares/BlogPosts');
 
 const {
     BlogPost,
+    BlogCategory
 } = require('../models');
 
 router.get('/', async (req, res, next) => {
@@ -23,6 +24,18 @@ router.get('/', async (req, res, next) => {
 router.get('/categories/count', async (req, res, next) => {
     try {
         res.status(200).send(await BlogPost.getBlogPostsCategoriesCounts());
+    } catch (err) {
+        next(err);
+    }
+});
+
+
+
+router.get('/categories', async (req, res, next) => {
+    try {
+        res.status(200).send(await BlogCategory.findAll({
+            attributes: ['id', 'title']
+        }));
     } catch (err) {
         next(err);
     }

@@ -11,54 +11,49 @@ const {
     User,
     // UserDesignation
 }                           = require('../models');
-// router.post('/login', async (req, res, next) => {
+router.post('/login', async (req, res, next) => {
 
-//     try {
+    try {
 
-//         let errorMessage = 'Please provide the required attributes ';
+        let errorMessage = 'Please provide the required attributes ';
 
-//         if (!req.body.email || !req.body.password) {
-//             errorMessage = !req.body.email     ? errorMessage +  " 'email' "   : errorMessage;
-//             errorMessage = !req.body.password     ? errorMessage +  " 'password' "   : errorMessage;
-//             return res.status(400).send({ message: errorMessage });
-//         }
+        if (!req.body.email || !req.body.password) {
+            errorMessage = !req.body.email     ? errorMessage +  " 'email' "   : errorMessage;
+            errorMessage = !req.body.password     ? errorMessage +  " 'password' "   : errorMessage;
+            return res.status(400).send({ message: errorMessage });
+        }
 
-//         let params = { email: req.body.email, password: md5(req.body.password), active: defaults.FLAG.YES };
-//         let userDataAndCountPromises = User.getUsers(params);
-//         let userRes = await userDataAndCountPromises.dataPromise;
-//         let userCount = await userDataAndCountPromises.countPromise;
+        let params = { email: req.body.email, password: md5(req.body.password), active: defaults.FLAG.YES };
+        let userDataAndCountPromises = User.getUsers(params);
+        let userRes = await userDataAndCountPromises.dataPromise;
+        let userCount = await userDataAndCountPromises.countPromise;
 
-//         if(!_.isEmpty(userCount) && userCount > 1) {
-//             return res.status(409).send({ message: req.app.locals.translation.AUTHENTICATION.MULTIPLE_ACCOUNTS });
-//         }
+        if(!_.isEmpty(userCount) && userCount > 1) {
+            return res.status(409).send({ message: req.app.locals.translation.AUTHENTICATION.MULTIPLE_ACCOUNTS });
+        }
 
-//         userRes = _.first(userRes);
+        userRes = _.first(userRes);
 
-//         if(_.isEmpty(userRes)) {
-//             return res.status(400).send({ message: req.app.locals.translation.AUTHENTICATION.CREDENTIALS_INVALID });
-//         }
+        if(_.isEmpty(userRes)) {
+            return res.status(400).send({ message: req.app.locals.translation.AUTHENTICATION.CREDENTIALS_INVALID });
+        }
 
-//         userRes = userRes.get({ plain: true });
-
-//         if(!_.isEmpty(userRes) && !_.isEmpty(userRes.UserDesignation) && !_.isEmpty(userRes.UserDesignation.UserPrivileges)) {
-//             userRes.privileges = UserDesignation.getOnlyPrivKeys(userRes.UserDesignation.UserPrivileges);
-//             delete userRes.UserDesignation.UserPrivileges;
-//         }
+        userRes = userRes.get({ plain: true });
         
-//         if(userRes.deleted == true) {
-//             return res.status(405).send({ message: req.app.locals.translation.AUTHENTICATION.CREDENTIALS_SUSPENDED });
-//         }
+        if(userRes.deleted == true) {
+            return res.status(405).send({ message: req.app.locals.translation.AUTHENTICATION.CREDENTIALS_SUSPENDED });
+        }
         
-//         res.status(200).send({
-//             token: authenticationHelper.generateToken(userRes),
-//             userInfo: userRes
-//         });
+        res.status(200).send({
+            token: authenticationHelper.generateToken(userRes),
+            userInfo: userRes
+        });
 
-//     } catch (error) {
-//         next(error);
-//     }
+    } catch (error) {
+        next(error);
+    }
 
-// });
+});
 
 // router.get('/refreshToken', (req, res, next) => {
 
