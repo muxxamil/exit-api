@@ -31,7 +31,7 @@ module.exports = function (sequelize, DataTypes) {
         },
         preDetail: {
             type: DataTypes.TEXT,
-            allowNull: false,
+            allowNull: true,
             field: 'pre_detail'
         },
         videoUrl: {
@@ -156,14 +156,6 @@ module.exports = function (sequelize, DataTypes) {
     BlogPost.createBlogPost = async (params) => {
         let createBlogPostResult = await BlogPost.create(BlogPost.getRawParams(params));
         let extraBlogPostEnteriesPromises = [];
-        if(params.tagIds) {
-            let tagMappingParams = {
-                blogId: createBlogPostResult.id,
-                tagIds: params.tagIds.split(',')
-            };
-
-            extraBlogPostEnteriesPromises = sequelize.models.TagsBlogPostsMapping.createBlogPostAndTagIdsRelation(tagMappingParams);
-        }
 
         if(params.uploadedImageName) {
             extraBlogPostEnteriesPromises.push(sequelize.models.Attachment.create({

@@ -17,7 +17,7 @@ BlogPostsMiddleware.addPost = async (req, res, next) => {
         req.body.key = req.body.title.split(' ').join('_');
     }
 
-    if(_.isEmpty(req.body.preDetail) && _.isEmpty(req.body.postDetail)) {
+    if(_.isEmpty(req.body.postDetail)) {
         errorMessages.push(req.app.locals.translation.MISSING_ATTRIBUTES.PRE_POST_DETAIL);
     }
 
