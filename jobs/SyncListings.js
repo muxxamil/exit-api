@@ -26,7 +26,7 @@ SyncListings.run = async () => {
 
     await client.login();
 
-    let limit = 50, offset = 1;
+    let limit = 100, offset = 1;
 
     try {
 

@@ -38,5 +38,15 @@ module.exports = function (sequelize, DataTypes) {
         tableName: 'companies'
     });
 
+    Company.CONSTANTS = {
+        COMPANIES: {
+            EXIT_REALTY_SPECIALISTS: 8,
+            EXIT_REALTY_SPECIALISTS_ROTHESAY: 5,
+        },
+        BOARD: {
+            SAINT_JOHN: 84
+        }
+    }
+
     return Company;
 }

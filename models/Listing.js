@@ -69,7 +69,7 @@ module.exports = function (sequelize, DataTypes) {
             allowNull: false,
         },
         boardId: {
-            type: DataTypes.BOOLEAN,
+            type: DataTypes.INTEGER(11),
             field: 'board_id',
         },
         featured: {
@@ -126,6 +126,18 @@ module.exports = function (sequelize, DataTypes) {
         options.subQuery = false;
         options.where = {purposeId: {[op.ne]: sequelize.models.ListingPurpose.CONSTANTS.PURPOSES.VACANT_LAND}};
 
+        if(!_.isEmpty(params.featured)) {
+            options.where.featured = params.featured;
+        }
+        
+        if(!_.isEmpty(params.boardId)) {
+            options.where.boardId = params.boardId;
+        }
+
+        if(!_.isEmpty(params.companyId)) {
+            options.where.companyId = params.companyId;
+        }
+
         if(!_.isEmpty(params.streetName)) {
             options.where.streetName = params.streetName;
         }
@@ -181,7 +193,7 @@ module.exports = function (sequelize, DataTypes) {
             options.offset = limitOptions.offset
         }
 
-        options.attributes = { exclude: ['boardId', 'active', 'featured', 'addedBy', 'updatedBy', 'createdAt', 'updatedAt'] };
+        options.attributes = { exclude: ['boardId', 'active', 'addedBy', 'updatedBy', 'createdAt', 'updatedAt'] };
 
         options.include = [
             {
@@ -216,7 +228,9 @@ module.exports = function (sequelize, DataTypes) {
         result.count = result.count.count;
 
         result.rows = helpers.cleanArray(result.rows);
-        result.rows = await Listing.appendAttachments(result.rows);
+        if(params.loadImages) {
+            result.rows = await Listing.appendAttachments(result.rows);
+        }
         return result;
     }
 
