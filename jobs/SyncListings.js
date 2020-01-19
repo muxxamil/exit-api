@@ -240,7 +240,7 @@ function parseExternalListings(externalListings) {
             cityName: _.get(obj, "Address.City", null),
             provinceName: _.get(obj, "Address.Province", null),
             type: _.get(obj, "TransactionType", null),
-            price: _.get(obj, "Price", null),
+            price: _.get(obj, "Price", 0),
             beds: _.get(obj, "Building.BedroomsTotal", null),
             baths: _.get(obj, "Building.BathroomTotal", null),
             area: _.get(area, '0', null),
