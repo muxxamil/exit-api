@@ -8,7 +8,7 @@ let authenticationMiddleware  = require('./middlewares/Authentication');
 var i18n                      = require("i18n-express");
 let responseHandler           = require('./helpers/ResponseHandler');
 let logger                    = require('./helpers/Logger');
-const syncListingsJob   = require('./Jobs/syncListings');
+const syncListingsJob   = require('./jobs/SyncListings');
 var app = express();
 
 // view engine setup
@@ -43,7 +43,7 @@ app.use(authenticationMiddleware.isAuthenticUser.unless(
 
 var schedule = require('node-schedule');
 var rule = new schedule.RecurrenceRule();
-rule.minute = 45;
+rule.minute = 57;
 schedule.scheduleJob(rule, () => {
   syncListingsJob.run();
 });
