@@ -1,8 +1,8 @@
 'use strict';
-const { RetsClient, RetsVersion, RetsFormat, DdfCulture } = require('rets-ddf-client');
-const _ = require('lodash');
-var dotenv            = require('dotenv').config();
-const bbPromise = require('bluebird');
+const { RetsClient, RetsVersion, RetsFormat, DdfCulture } = require('./node_modules/rets-ddf-client');
+const _ = require('./node_modules/lodash');
+var dotenv            = require('./node_modules/dotenv').config();
+const bbPromise = require('./node_modules/bluebird');
 const defaults = require('../config/defaults');
 const {
     City,
@@ -10,7 +10,8 @@ const {
     ListingType,
     Company,
     ListingPurpose,
-    Listing
+    Listing,
+    Attachment
 } = require('../models');
 
 const SyncListings = {};
