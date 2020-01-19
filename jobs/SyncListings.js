@@ -252,12 +252,12 @@ function parseExternalListings(externalListings) {
             active: defaults.FLAG.YES,
             addedBy: 1,
             updatedBy: 1,
-            photo: _.map(_.filter(_.get(obj, "Photo.PropertyPhoto", []), (singlePhoto) => !_.isEmpty(singlePhoto.PhotoURL)), (photoObj) => {
+            photo: _.map(_.filter(_.get(obj, "Photo.PropertyPhoto", []), (singlePhoto) => !_.isEmpty(singlePhoto.LargePhotoURL)), (photoObj) => {
                 const key = `sequence_${_.get(photoObj, "SequenceId", '')}`;
                 return {
                     key: key,
                     title: key,
-                    path: _.get(photoObj, "PhotoURL", ''),
+                    path: _.get(photoObj, "LargePhotoURL", ''),
                     type: Attachment.CONSTANTS.TYPE.IMAGE,
                     againstType: Attachment.CONSTANTS.AGAINST_TYPE.LISTING,
                     againstId: null,
