@@ -38,5 +38,11 @@ module.exports = function (sequelize, DataTypes) {
         tableName: 'listing_purposes'
     });
 
+    ListingPurpose.CONSTANTS = {
+        PURPOSES: {
+            VACANT_LAND: 1
+        }
+    }
+
     return ListingPurpose;
 }

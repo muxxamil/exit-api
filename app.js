@@ -33,8 +33,10 @@ app.use(authenticationMiddleware.isAuthenticUser.unless(
       { url: '/blogPosts', methods: ['GET'] },
       { url: '/blogPosts/categories/count', methods: ['GET'] },
       { url: '/blogPosts/recent', methods: ['GET'] },
-      { url: '/rentalLocations', methods: ['GET'] },
-      { url: '/tags', methods: ['GET'] },
+      { url: '/cities', methods: ['GET'] },
+      { url: '/listings/types', methods: ['GET'] },
+      { url: '/listings/purposes', methods: ['GET'] },
+      { url: '/listings', methods: ['GET'] },
       { url: '/rentalLocations/:id/availibility', methods: ['GET'] },
       { url: '/comments/visitor', methods: ['POST'] },
     ]
@@ -43,7 +45,7 @@ app.use(authenticationMiddleware.isAuthenticUser.unless(
 
 var schedule = require('node-schedule');
 var rule = new schedule.RecurrenceRule();
-rule.minute = 57;
+rule.minute = 01;
 schedule.scheduleJob(rule, () => {
   syncListingsJob.run();
 });

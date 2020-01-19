@@ -1,8 +1,8 @@
 'use strict';
-const { RetsClient, RetsVersion, RetsFormat, DdfCulture } = require('./node_modules/rets-ddf-client');
-const _ = require('./node_modules/lodash');
-var dotenv            = require('./node_modules/dotenv').config();
-const bbPromise = require('./node_modules/bluebird');
+const { RetsClient, RetsVersion, RetsFormat, DdfCulture } = require('rets-ddf-client');
+const _ = require('lodash');
+var dotenv            = require('dotenv').config();
+const bbPromise = require('bluebird');
 const defaults = require('../config/defaults');
 const {
     City,
@@ -240,6 +240,7 @@ function parseExternalListings(externalListings) {
             cityName: _.get(obj, "Address.City", null),
             provinceName: _.get(obj, "Address.Province", null),
             type: _.get(obj, "TransactionType", null),
+            price: _.get(obj, "Price", null),
             beds: _.get(obj, "Building.BedroomsTotal", null),
             baths: _.get(obj, "Building.BathroomTotal", null),
             area: _.get(area, '0', null),

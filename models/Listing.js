@@ -1,5 +1,12 @@
 'use strict';
 
+const bbPromise = require('bluebird');
+const _ = require('lodash');
+const sequelize = require('sequelize');
+const op = sequelize.Op;
+const defaults = require('../config/defaults');
+const helpers = require('../helpers/Helper');
+
 module.exports = function (sequelize, DataTypes) {
 
     const Listing = sequelize.define('Listing', {
@@ -36,6 +43,9 @@ module.exports = function (sequelize, DataTypes) {
             type: DataTypes.INTEGER(11),
             field: 'type_id',
         },
+        price: {
+            type: DataTypes.FLOAT,
+        },
         beds: {
             type: DataTypes.INTEGER(11),
         },
@@ -58,7 +68,7 @@ module.exports = function (sequelize, DataTypes) {
             field: 'purpose_id',
             allowNull: false,
         },
-        board_id: {
+        boardId: {
             type: DataTypes.BOOLEAN,
             field: 'board_id',
         },
@@ -110,6 +120,126 @@ module.exports = function (sequelize, DataTypes) {
         Listing.hasMany(models.Attachment, {foreignKey: 'againstId', scope: { against_type: ['listing'] }});
 
     };
+
+    Listing.getListings = async (params) => {
+        let options = {};
+        options.subQuery = false;
+        options.where = {purposeId: {[op.ne]: sequelize.models.ListingPurpose.CONSTANTS.PURPOSES.VACANT_LAND}};
+
+        if(!_.isEmpty(params.streetName)) {
+            options.where.streetName = params.streetName;
+        }
+
+        if(!_.isEmpty(params.cityId)) {
+            options.where.cityId = params.cityId;
+        }
+
+        if(!_.isEmpty(params.provinceId)) {
+            options.where.provinceId = params.provinceId;
+        }
+
+        if(!_.isEmpty(params.typeId)) {
+            options.where.typeId = params.typeId;
+        }
+        
+        if(!_.isEmpty(params.purposeId)) {
+            options.where.purposeId = params.purposeId;
+        }
+
+        if(params.minArea || params.maxArea) {
+            options.where.area = params.minArea || params.maxArea;
+        }
+
+        if(params.minPrice || params.maxPrice) {
+            options.where.price = params.minPrice || params.maxPrice;
+        }
+
+        if(params.minArea && params.maxArea) {
+            options.where.area = {
+                [op.between]: [params.minArea, params.maxArea]
+            };
+        }
+
+        if(params.minPrice && params.maxPrice) {
+            options.where.price = {
+                [op.between]: [params.minPrice, params.maxPrice]
+            };
+        }
+
+        const countPromise = Listing.find({
+            attributes: [ [ sequelize.literal('count(*)'), 'count' ] ],
+            subQuery: false,
+            raw: true,
+            where: _.clone(options.where)
+        });
+
+        let limitOptions = Listing.setPagination(params);
+        if(limitOptions.limit) {
+            options.limit = limitOptions.limit
+        }
+        if(limitOptions.offset || limitOptions.offset == 0) {
+            options.offset = limitOptions.offset
+        }
+
+        options.attributes = { exclude: ['boardId', 'active', 'featured', 'addedBy', 'updatedBy', 'createdAt', 'updatedAt'] };
+
+        options.include = [
+            {
+                model : sequelize.models.ListingPurpose,
+                required: true,
+                attributes: ['id', 'title']
+            },
+            {
+                model : sequelize.models.Province,
+                attributes: ['id', 'title']
+            },
+            {
+                model : sequelize.models.ListingType,
+                attributes: ['id', 'title']
+            },
+            {
+                model : sequelize.models.Company,
+                attributes: ['id', 'title']
+            },
+            {
+                model : sequelize.models.City,
+                attributes: ['id', 'title']
+            }
+        ];
+
+        options.order = [['id', defaults.sortOrder.DESC]];
+
+        const result = await bbPromise.props({
+            count: countPromise,
+            rows: Listing.findAll(options)
+        });
+        result.count = result.count.count;
+
+        result.rows = helpers.cleanArray(result.rows);
+        result.rows = await Listing.appendAttachments(result.rows);
+        return result;
+    }
+
+    Listing.appendAttachments = async (data) => {
+        const listingIds = _.map(data, 'id');
+
+        let attachments = await sequelize.models.Attachment.findAll({
+            attributes: ['id', 'key', 'path', 'againstId'],
+            where: {
+                againstId: listingIds,
+                againstType: sequelize.models.Attachment.CONSTANTS.AGAINST_TYPE.LISTING
+            }
+        });
+
+        attachments = _.groupBy(attachments, 'againstId');
+
+        return _.map(data, (obj) => {
+            return {
+                ...obj,
+                Attachments: _.get(attachments, obj.id, [])
+            }
+        });
+    }
 
     return Listing;
 }

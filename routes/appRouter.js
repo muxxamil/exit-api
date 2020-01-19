@@ -6,5 +6,7 @@ module.exports = (app) => {
   app.use('/authentication', require('../controllers/Authentication'));
   app.use('/blogPosts', require('../controllers/BlogPosts'));
   app.use('/comments', require('../controllers/Comments'));
+  app.use('/cities', require('../controllers/Cities'));
+  app.use('/listings', require('../controllers/Listings'));
 
 }
