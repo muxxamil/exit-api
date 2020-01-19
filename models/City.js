@@ -2,7 +2,7 @@
 
 module.exports = function (sequelize, DataTypes) {
 
-    const BlogCategory = sequelize.define('BlogCategory', {
+    const City = sequelize.define('City', {
 
         id: {
             type: DataTypes.INTEGER(11),
@@ -21,6 +21,7 @@ module.exports = function (sequelize, DataTypes) {
         active: {
             type: DataTypes.BOOLEAN,
             allowNull: false,
+            defaultValue: true,
         },
         createdAt: {
             type: DataTypes.DATE,
@@ -34,21 +35,8 @@ module.exports = function (sequelize, DataTypes) {
         }
     }, {
 
-        tableName: 'blog_categories'
+        tableName: 'cities'
     });
 
-    BlogCategory.associate = function (models) {
-
-        BlogCategory.hasMany(models.BlogPost, {foreignKey: 'catId'});
-
-    };
-
-    BlogCategory.CONSTANTS = {
-        ACTIVE: {
-            YES: true,
-            NO: false,
-        }
-    }
-
-    return BlogCategory;
+    return City;
 }

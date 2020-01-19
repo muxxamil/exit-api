@@ -11,11 +11,11 @@ module.exports = function (sequelize, DataTypes) {
             autoIncrement: true,
         },
         key: {
-            type: DataTypes.INTEGER(11),
+            type: DataTypes.STRING(50),
             allowNull: false,
         },
         title: {
-            type: DataTypes.ENUM('ip'),
+            type: DataTypes.STRING(255),
             allowNull: false,
         },
         active: {

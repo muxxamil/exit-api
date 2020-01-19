@@ -27,7 +27,7 @@ module.exports = function (sequelize, DataTypes) {
             allowNull: false,
         },
         againstType: {
-            type: DataTypes.ENUM('blog'),
+            type: DataTypes.ENUM('blog', 'listing'),
             allowNull: false,
             field: 'against_type'
         },
@@ -70,7 +70,8 @@ module.exports = function (sequelize, DataTypes) {
             NO: false,
         },
         AGAINST_TYPE: {
-            BLOG: 'blog'
+            BLOG: 'blog',
+            LISTING: 'listing'
         },
         TYPE: {
             IMAGE: 'image'

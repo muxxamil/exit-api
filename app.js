@@ -8,7 +8,7 @@ let authenticationMiddleware  = require('./middlewares/Authentication');
 var i18n                      = require("i18n-express");
 let responseHandler           = require('./helpers/ResponseHandler');
 let logger                    = require('./helpers/Logger');
-// const weeklyHoursAdjustment   = require('./Jobs/WeeklyHoursAdjustment');
+const syncListingsJob   = require('./Jobs/syncListings');
 var app = express();
 
 // view engine setup
@@ -28,6 +28,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(authenticationMiddleware.isAuthenticUser.unless(
   { path: [
       { url: '/authentication/login', methods: ['POST'] },
+      { url: '/comments', methods: ['GET'] },
       { url: '/users', methods: ['POST'] },
       { url: '/blogPosts', methods: ['GET'] },
       { url: '/blogPosts/categories/count', methods: ['GET'] },
@@ -40,11 +41,12 @@ app.use(authenticationMiddleware.isAuthenticUser.unless(
   }
 ));
 
-// var schedule = require('node-schedule');
-
-// schedule.scheduleJob('59 55 23 * * 0', () => {
-//   weeklyHoursAdjustment.run();
-// });
+var schedule = require('node-schedule');
+var rule = new schedule.RecurrenceRule();
+rule.minute = 45;
+schedule.scheduleJob(rule, () => {
+  syncListingsJob.run();
+});
 
 routes(app);
 
