@@ -45,7 +45,7 @@ app.use(authenticationMiddleware.isAuthenticUser.unless(
 
 var schedule = require('node-schedule');
 var rule = new schedule.RecurrenceRule();
-rule.minute = 14;
+rule.minute = 22;
 schedule.scheduleJob(rule, () => {
   syncListingsJob.run();
 });

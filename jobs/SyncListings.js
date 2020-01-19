@@ -118,6 +118,7 @@ async function upsertIntoListing(data) {
     for (let index = 0; index < data.length; index++) {
         const listingObj = data[index];
         if(_.get(listingsResult, listingObj.externalId, null)) {
+            _.unset(listingObj, 'featured');
             promisesArr.push(Listing.update(_.cloneDeep(listingObj), {
                 where: {
                     externalId: listingObj.externalId
