@@ -38,5 +38,11 @@ module.exports = function (sequelize, DataTypes) {
         tableName: 'listing_types'
     });
 
+    ListingType.CONSTANTS = {
+        KEYS: {
+            LEASE: 'forLease'
+        }
+    }
+
     return ListingType;
 }

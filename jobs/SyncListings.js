@@ -234,14 +234,15 @@ function getNonExistingDefinitionValues(data = [], definitionValues) {
 function parseExternalListings(externalListings) {
     return _.map(externalListings, (obj) => {
         const area = _.split(_.get(obj, "Building.TotalFinishedArea", ""), ' ');
+        const typeName = _.get(obj, "TransactionType", null);
         return {
             externalId: _.get(obj, "_XmlAttributes.ID", null),
             mlsNumber: _.get(obj, "ListingID", null),
             streetName: _.get(obj, "Address.StreetAddress", null),
             cityName: _.get(obj, "Address.City", null),
             provinceName: _.get(obj, "Address.Province", null),
-            type: _.get(obj, "TransactionType", null),
-            price: _.get(obj, "Price", 0),
+            type: typeName,
+            price: _.camelCase(typeName) == ListingType.CONSTANTS.KEYS.LEASE ? _.get(obj, "Lease", 0) : _.get(obj, "Price", 0),
             beds: _.get(obj, "Building.BedroomsTotal", null),
             baths: _.get(obj, "Building.BathroomTotal", null),
             area: _.get(area, '0', null),
