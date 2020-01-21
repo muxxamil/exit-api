@@ -127,10 +127,10 @@ module.exports = function (sequelize, DataTypes) {
         options.where = {purposeId: {[op.ne]: sequelize.models.ListingPurpose.CONSTANTS.PURPOSES.VACANT_LAND}};
 
         if(!_.isEmpty(params.beds)) {
-            options.where.beds = params.beds;
+            options.where.beds = params.beds == '4+' ? {[op.gt]: 4} : params.beds;
         }
         if(!_.isEmpty(params.baths)) {
-            options.where.baths = params.baths;
+            options.where.baths = params.baths == '4+' ? {[op.gt]: 4} : params.baths;
         }
         if(!_.isEmpty(params.featured)) {
             options.where.featured = params.featured;
