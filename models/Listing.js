@@ -126,6 +126,12 @@ module.exports = function (sequelize, DataTypes) {
         options.subQuery = false;
         options.where = {purposeId: {[op.ne]: sequelize.models.ListingPurpose.CONSTANTS.PURPOSES.VACANT_LAND}};
 
+        if(!_.isEmpty(params.beds)) {
+            options.where.beds = params.beds;
+        }
+        if(!_.isEmpty(params.baths)) {
+            options.where.baths = params.baths;
+        }
         if(!_.isEmpty(params.featured)) {
             options.where.featured = params.featured;
         }
