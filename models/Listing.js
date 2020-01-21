@@ -225,7 +225,7 @@ module.exports = function (sequelize, DataTypes) {
             }
         ];
 
-        options.order = [['id', defaults.sortOrder.DESC]];
+        options.order = [['external_id', defaults.sortOrder.DESC]];
 
         const result = await bbPromise.props({
             count: countPromise,
