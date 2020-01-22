@@ -145,7 +145,17 @@ module.exports = function (sequelize, DataTypes) {
         }
 
         if(!_.isEmpty(params.streetName)) {
-            options.where.streetName = params.streetName;
+            options.where = {
+                ...options.where,
+                [op.or]: [
+                    {
+                        streetName: params.streetName
+                    },
+                    {
+                        mlsNumber: params.streetName
+                    }
+                ]
+            }
         }
 
         if(!_.isEmpty(params.cityId)) {
