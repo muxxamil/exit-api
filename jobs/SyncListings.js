@@ -247,7 +247,7 @@ function parseExternalListings(externalListings) {
             baths: _.get(obj, "Building.BathroomTotal", null),
             area: _.get(area, '0', null),
             areaType: _.get(area, '1', null),
-            companyName: _.get(obj, "AgentDetails.Office.Name", null),
+            companyName: _.get(obj, "AgentDetails.Office.Name", null) || _.get(obj, "AgentDetails.0.Office.Name", null),
             purpose: _.get(obj, "PropertyType", null),
             boardId: _.get(obj, "Board", null),
             featured: defaults.FLAG.NO,
