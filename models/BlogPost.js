@@ -78,9 +78,6 @@ module.exports = function (sequelize, DataTypes) {
         BlogPost.belongsTo(models.User, {foreignKey: 'updatedBy', as: 'UpeatedBy'});
 
         BlogPost.hasMany(models.Attachment, {foreignKey: 'againstId', scope: { against_type: ['blog'] }});
-        BlogPost.hasMany(models.BlogPostLike, {foreignKey: 'blogId'});
-        BlogPost.hasMany(models.Comment, {foreignKey: 'againstId', scope: { against_type: ['blog'] }});
-        BlogPost.hasMany(models.TagsBlogPostsMapping, {foreignKey: 'blogId'});
 
     };
 

@@ -28,7 +28,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(authenticationMiddleware.isAuthenticUser.unless(
   { path: [
       { url: '/authentication/login', methods: ['POST'] },
-      { url: '/comments', methods: ['GET'] },
       { url: '/users', methods: ['POST'] },
       { url: '/blogPosts', methods: ['GET'] },
       { url: '/blogPosts/categories/count', methods: ['GET'] },
@@ -37,8 +36,7 @@ app.use(authenticationMiddleware.isAuthenticUser.unless(
       { url: '/listings/types', methods: ['GET'] },
       { url: '/listings/purposes', methods: ['GET'] },
       { url: '/listings', methods: ['GET'] },
-      { url: '/rentalLocations/:id/availibility', methods: ['GET'] },
-      { url: '/comments/visitor', methods: ['POST'] },
+      { url: '/agents', methods: ['GET'] },
     ]
   }
 ));
