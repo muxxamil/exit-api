@@ -9,6 +9,7 @@ var i18n                      = require("i18n-express");
 let responseHandler           = require('./helpers/ResponseHandler');
 let logger                    = require('./helpers/Logger');
 const syncListingsJob   = require('./jobs/SyncListings');
+const changeDisplayOrderOfAgents   = require('./jobs/ChangeDisplayOrderOfAgents');
 var app = express();
 
 // view engine setup
@@ -42,10 +43,17 @@ app.use(authenticationMiddleware.isAuthenticUser.unless(
 ));
 
 var schedule = require('node-schedule');
-var rule = new schedule.RecurrenceRule();
-rule.minute = 15;
-schedule.scheduleJob(rule, () => {
+var listingsRule = new schedule.RecurrenceRule();
+listingsRule.minute = 15;
+schedule.scheduleJob(listingsRule, () => {
   syncListingsJob.run();
+});
+
+var rule = new schedule.RecurrenceRule();
+rule.minute = 00;
+
+schedule.scheduleJob(rule, () => {
+  changeDisplayOrderOfAgents.run();
 });
 
 routes(app);

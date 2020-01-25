@@ -1,5 +1,6 @@
 'use strict';
 const express = require('express');
+const sequelize = require('sequelize');
 const router = express.Router();
 const defaults = require('../config/defaults');
 const {

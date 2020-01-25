@@ -64,6 +64,11 @@ module.exports = function (sequelize, DataTypes) {
         active: {
             type: DataTypes.INTEGER(1),
         },
+        order: {
+            type: DataTypes.INTEGER(11),
+            field: 'display_order',
+            allowNull: false,
+        },
         addedBy: {
             type: DataTypes.INTEGER(11),
             field: 'added_by'
@@ -83,6 +88,15 @@ module.exports = function (sequelize, DataTypes) {
     }, {
         tableName: 'agents'
     });
+
+    Agent.updateDisplayOrder = async () => {
+        const maxOrder = await Agent.max('order');
+        return sequelize.query(`UPDATE agents SET display_order =
+        CASE display_order
+          WHEN ${maxOrder} THEN 1
+          ELSE display_order + 1
+        END;`);
+    }
 
     return Agent;
 }

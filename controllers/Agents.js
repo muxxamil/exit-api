@@ -14,7 +14,7 @@ router.get('/', async (req, res, next) => {
         }
         res.status(200).send(await Agent.findAll({
             where: whereClause,
-            order : [['name', defaults.sortOrder.ASC]]
+            order : [['order', defaults.sortOrder.ASC]]
         }));
     } catch (err) {
         next(err);
