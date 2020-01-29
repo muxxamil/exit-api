@@ -44,7 +44,7 @@ module.exports = function (sequelize, DataTypes) {
         },
         phone: {
             type: DataTypes.STRING(40),
-            field: 'phone',
+            field: 'agent_phone',
         },
         otherPhone: {
             type: DataTypes.STRING(40),
