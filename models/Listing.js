@@ -149,7 +149,10 @@ module.exports = function (sequelize, DataTypes) {
                 ...options.where,
                 [op.or]: [
                     {
-                        streetName: params.streetName
+                        streetName: {[op.like]: `%${params.streetName}%`}
+                    },
+                    {
+                        city: {[op.like]: `%${params.streetName}%`}
                     },
                     {
                         mlsNumber: params.streetName
