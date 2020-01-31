@@ -44,13 +44,13 @@ app.use(authenticationMiddleware.isAuthenticUser.unless(
 
 var schedule = require('node-schedule');
 var listingsRule = new schedule.RecurrenceRule();
-listingsRule.minute = 15;
+listingsRule.minute = 08;
 schedule.scheduleJob(listingsRule, () => {
   syncListingsJob.run();
 });
 
 var rule = new schedule.RecurrenceRule();
-rule.minute = 06;
+rule.minute = 00;
 
 schedule.scheduleJob(rule, () => {
   changeDisplayOrderOfAgents.run();
