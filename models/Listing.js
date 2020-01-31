@@ -35,6 +35,10 @@ module.exports = function (sequelize, DataTypes) {
             type: DataTypes.INTEGER(11),
             field: 'city_id',
         },
+        cityName: {
+            type: DataTypes.STRING(100),
+            field: 'city_name',
+        },
         provinceId: {
             type: DataTypes.INTEGER(11),
             field: 'province_id',
@@ -150,6 +154,9 @@ module.exports = function (sequelize, DataTypes) {
                 [op.or]: [
                     {
                         streetName: {[op.like]: `%${params.streetName}%`}
+                    },
+                    {
+                        cityName: {[op.like]: `%${params.streetName}%`}
                     },
                     {
                         mlsNumber: params.streetName

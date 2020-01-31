@@ -50,7 +50,7 @@ schedule.scheduleJob(listingsRule, () => {
 });
 
 var rule = new schedule.RecurrenceRule();
-rule.minute = 00;
+rule.minute = 06;
 
 schedule.scheduleJob(rule, () => {
   changeDisplayOrderOfAgents.run();
