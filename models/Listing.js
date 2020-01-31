@@ -152,9 +152,6 @@ module.exports = function (sequelize, DataTypes) {
                         streetName: {[op.like]: `%${params.streetName}%`}
                     },
                     {
-                        city: {[op.like]: `%${params.streetName}%`}
-                    },
-                    {
                         mlsNumber: params.streetName
                     }
                 ]
