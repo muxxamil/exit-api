@@ -23,10 +23,9 @@ SyncListings.run = async () => {
         password: process.env.CREA_PASSWORD,
         version: RetsVersion.CREA_DDF
     });
+await client.login();
 
-    await client.login();
-
-    let limit = 100, offset = 1;
+    let limit = 50, offset = 1;
 
     try {
 
@@ -62,10 +61,10 @@ SyncListings.run = async () => {
                 await bbPromise.all(upsertIntoListing(externalListings));
                 await bbPromise.all(refreshImagesOfListings(externalListings));
             }
-        } while (externalListings);
-        res.send(externalListings);
+        } while (!_.isEmpty(externalListings));
     } catch (error) {
-    } finally {
+console.log("zxczc", error);
+} finally {
         client.logout();
     }
 };
@@ -235,6 +234,37 @@ function parseExternalListings(externalListings) {
     return _.map(externalListings, (obj) => {
         const area = _.split(_.get(obj, "Building.TotalFinishedArea", ""), ' ');
         const typeName = _.get(obj, "TransactionType", null);
+        let filteredPhotos = _.map(_.filter(_.get(obj, "Photo.PropertyPhoto", []), (singlePhoto) => !_.isEmpty(singlePhoto.PhotoURL)), (photoObj) => {
+            const key = `sequence_${_.get(photoObj, "SequenceId", '')}`;
+            return {
+                key: key,
+                title: key,
+                path: _.get(photoObj, "PhotoURL", ''),
+                type: Attachment.CONSTANTS.TYPE.IMAGE,
+                againstType: Attachment.CONSTANTS.AGAINST_TYPE.LISTING,
+                againstId: null,
+                active: defaults.FLAG.YES,
+                addedBy: 1,
+                updatedBy: 1
+            }
+        });
+        const singlePhoto = _.get(obj, "Photo.PropertyPhoto", {});
+        if(_.isEmpty(filteredPhotos) && !_.isEmpty(singlePhoto)) {
+            const key = `sequence_${_.get(singlePhoto, "SequenceId", '')}`;
+            filteredPhotos = [
+                {
+                    key: key,
+                    title: key,
+                    path: _.get(singlePhoto, "PhotoURL", ''),
+                    type: Attachment.CONSTANTS.TYPE.IMAGE,
+                    againstType: Attachment.CONSTANTS.AGAINST_TYPE.LISTING,
+                    againstId: null,
+                    active: defaults.FLAG.YES,
+                    addedBy: 1,
+                    updatedBy: 1
+                }
+            ]
+        }
         return {
             externalId: _.get(obj, "_XmlAttributes.ID", null),
             mlsNumber: _.get(obj, "ListingID", null),
@@ -254,20 +284,7 @@ function parseExternalListings(externalListings) {
             active: defaults.FLAG.YES,
             addedBy: 1,
             updatedBy: 1,
-            photo: _.map(_.filter(_.get(obj, "Photo.PropertyPhoto", []), (singlePhoto) => !_.isEmpty(singlePhoto.PhotoURL)), (photoObj) => {
-                const key = `sequence_${_.get(photoObj, "SequenceId", '')}`;
-                return {
-                    key: key,
-                    title: key,
-                    path: _.get(photoObj, "PhotoURL", ''),
-                    type: Attachment.CONSTANTS.TYPE.IMAGE,
-                    againstType: Attachment.CONSTANTS.AGAINST_TYPE.LISTING,
-                    againstId: null,
-                    active: defaults.FLAG.YES,
-                    addedBy: 1,
-                    updatedBy: 1
-                }
-            })
+            photo: filteredPhotos
         }
     });
 }
