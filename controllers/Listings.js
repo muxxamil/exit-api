@@ -17,7 +17,7 @@ router.get('/types', async (req, res, next) => {
             where: {
                 active: defaults.FLAG.YES
             },
-            order : [['title', defaults.sortOrder.ASC]]
+            order : [['id', defaults.sortOrder.ASC]]
         }));
     } catch (err) {
         next(err);
