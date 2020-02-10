@@ -49,7 +49,7 @@ await client.login();
 
             if(!_.isEmpty(externalListings)) {
                 externalListings = parseExternalListings(externalListings);
-                externalIds = [...externalIds, _.map(externalListings, "externalId")];
+                externalIds = [...externalIds, ..._.map(externalListings, "externalId")];
                 const definitionValues = await getDefinitionValues();
                 formatDefinitionValues(definitionValues);
                 const definitionValuesToInsert = getNonExistingDefinitionValues(externalListings, definitionValues);
