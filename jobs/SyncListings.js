@@ -5,7 +5,7 @@ var dotenv            = require('dotenv').config();
 const bbPromise = require('bluebird');
 const defaults = require('../config/defaults');
 const sequelize     = require('sequelize');
-const Op            = sequelize.Op;
+const op            = sequelize.Op;
 const {
     City,
     Province,
