@@ -243,6 +243,10 @@ module.exports = function (sequelize, DataTypes) {
         ];
 
         options.order = [['external_id', defaults.sortOrder.DESC]];
+        
+        if(params.sortOn) {
+            options.order = [[params.sortOn, params.sortBy || defaults.sortOrder.DESC]];
+        }
 
         const result = await bbPromise.props({
             count: countPromise,

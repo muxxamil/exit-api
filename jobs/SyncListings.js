@@ -4,6 +4,8 @@ const _ = require('lodash');
 var dotenv            = require('dotenv').config();
 const bbPromise = require('bluebird');
 const defaults = require('../config/defaults');
+const sequelize     = require('sequelize');
+const Op            = sequelize.Op;
 const {
     City,
     Province,
@@ -29,7 +31,7 @@ await client.login();
 
     try {
 
-        let externalListings;
+        let externalListings, externalIds = [];
 
         do {
 
@@ -47,6 +49,7 @@ await client.login();
 
             if(!_.isEmpty(externalListings)) {
                 externalListings = parseExternalListings(externalListings);
+                externalIds = [...externalIds, _.map(externalListings, "externalId")];
                 const definitionValues = await getDefinitionValues();
                 formatDefinitionValues(definitionValues);
                 const definitionValuesToInsert = getNonExistingDefinitionValues(externalListings, definitionValues);
@@ -62,8 +65,16 @@ await client.login();
                 await bbPromise.all(refreshImagesOfListings(externalListings));
             }
         } while (!_.isEmpty(externalListings));
+
+        await Listing.destroy({
+            where: {
+                externalId: { [op.not]: externalIds }
+            }
+        });
+
     } catch (error) {
-console.log("zxczc", error);
+        console.log("ERROR: ");
+        console.log(error);
 } finally {
         client.logout();
     }
