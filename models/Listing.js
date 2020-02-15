@@ -187,7 +187,7 @@ module.exports = function (sequelize, DataTypes) {
             };
         }
 
-        if(params.maxPrice) {
+        if(params.maxArea) {
             options.where.area = {
                 [op.lte]: params.maxArea
             };
