@@ -181,23 +181,41 @@ module.exports = function (sequelize, DataTypes) {
             options.where.purposeId = params.purposeId;
         }
 
-        if(params.minArea || params.maxArea) {
-            options.where.area = params.minArea || params.maxArea;
+        if(params.minArea) {
+            options.where.area = {
+                [op.gte]: params.minArea
+            };
         }
 
-        if(params.minPrice || params.maxPrice) {
-            options.where.price = params.minPrice || params.maxPrice;
+        if(params.maxPrice) {
+            options.where.area = {
+                [op.lte]: params.maxArea
+            };
         }
 
         if(params.minArea && params.maxArea) {
             options.where.area = {
-                [op.between]: [params.minArea, params.maxArea]
+                [op.gte]: params.minArea,
+                [op.lte]: params.maxArea
+            };
+        }
+
+        if(params.minPrice) {
+            options.where.price = {
+                [op.gte]: params.minPrice
+            };
+        }
+
+        if(params.maxPrice) {
+            options.where.price = {
+                [op.lte]: params.maxPrice
             };
         }
 
         if(params.minPrice && params.maxPrice) {
             options.where.price = {
-                [op.between]: [params.minPrice, params.maxPrice]
+                [op.gte]: params.minPrice,
+                [op.lte]: params.maxPrice
             };
         }
 
