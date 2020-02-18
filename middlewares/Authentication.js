@@ -44,7 +44,7 @@ const authenticToken = function (req, res, next) {
     }
 };
 
-authenticToken.unless = require('express-unless');
+authenticUser.unless = require('express-unless');
 
 module.exports = { 
     'isAuthenticUser' : authenticUser,
