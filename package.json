@@ -27,6 +27,6 @@
     "nodemailer": "^4.6.8",
     "pug": "2.0.0-beta11",
     "rets-ddf-client": "^1.2.8",
-    "sequelize": "^4.38.0"
+    "sequelize": "^5.15.1"
   }
 }
